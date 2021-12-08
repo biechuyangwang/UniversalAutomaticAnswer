@@ -1,14 +1,19 @@
 path:
-  imgpath: "../img/harrypotter_question.jpg"
-  imgcropQpath: "../img/Q.png"
-  imgcropApath: "../img/A.png"
-  imgcropBpath: "../img/B.png"
-  imgcropCpath: "../img/C.png"
-  imgcropDpath: "../img/D.png"
+  imgpath: "img/harrypotter_question.jpg"
 
 windowsScreen:
   resolution: [1600,900]
   screen_hwnd: "android9"
+
+imgRect:
+  rectStart: [1269,810,1437,864]
+  rectContinue: [1189,864,1323,918]
+  rectCountdown: [770,40,840,100]
+  rectQ: [150,470,940,660]
+  rectA: [120,700,500,760]
+  rectB: [900,700,1350,760]
+  rectC: [120,820,500,870]
+  rectD: [900,820,1350,870]
 
 coordinate:
   coordinateWindowsRect: [1,2,3,4]
