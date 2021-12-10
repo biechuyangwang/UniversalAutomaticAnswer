@@ -11,7 +11,7 @@ class OCRImp():
         self.conf_data = conf_data
         self.ocr = PaddleOCR(use_angle_cls=True, lang="ch") # mode load
 
-    def ocr(self, img):
+    def ocr(self, img): # return ([坐标集], [内容集])
         return self.ocr.ocr(img, det=True, cls=False)
     
     def ocr_content(self, ocr_result):
@@ -42,9 +42,10 @@ if __name__ == '__main__':
     import time
     start = time.time()*1000
 
-    img = cv2.imread(screen.imgpath)
+    img = cv2.imread(screen.ravenclaw_imgpath)
     # print(win_rect)
     QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
+    person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
     # result = ocr.ocr(img_bgr)
     # print(result)
     resultq = ocr.ocr(QBtn)
@@ -52,16 +53,26 @@ if __name__ == '__main__':
     resultb = ocr.ocr(BBtn)
     resultc = ocr.ocr(CBtn)
     resultd = ocr.ocr(DBtn)
+    resultp1 = ocr.ocr(person1State)
+    resultp2 = ocr.ocr(person2State)
+    resultp3 = ocr.ocr(person3State)
+    # print(resultq)
 
     contentq = ocr.ocr_content(resultq)
     contenta = ocr.ocr_content(resulta)
     contentb = ocr.ocr_content(resultb)
     contentc = ocr.ocr_content(resultc)
     contentd = ocr.ocr_content(resultd)
+    contentp1 = ocr.ocr_content(resultp1)
+    contentp2 = ocr.ocr_content(resultp2)
+    contentp3 = ocr.ocr_content(resultp3)
 
     print(contentq)
     print(contenta)
     print(contentb)
     print(contentc)
     print(contentd)
+    print(contentp1)
+    print(contentp2)
+    print(contentp3)
     print('识别题目和选项总耗时：', time.time()*1000-start)

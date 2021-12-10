@@ -1,0 +1,64 @@
+Namespace(benchmark=False, cls_batch_num=6, cls_image_shape='3, 48, 192', cls_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\cls\\ch_ppocr_mobile_v2.0_cls_infer', cls_thresh=0.9, cpu_threads=10, det=True, det_algorithm='DB', det_db_box_thresh=0.6, det_db_score_mode='fast', det_db_thresh=0.3, det_db_unclip_ratio=1.5, det_east_cover_thresh=0.1, det_east_nms_thresh=0.2, det_east_score_thresh=0.8, det_limit_side_len=960, det_limit_type='max', det_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\det\\ch\\ch_PP-OCRv2_det_infer', det_pse_box_thresh=0.85, det_pse_box_type='box', det_pse_min_area=16, det_pse_scale=1, det_pse_thresh=0, det_sast_nms_thresh=0.2, det_sast_polygon=False, det_sast_score_thresh=0.5, drop_score=0.5, e2e_algorithm='PGNet', e2e_char_dict_path='./ppocr/utils/ic15_dict.txt', e2e_limit_side_len=768, e2e_limit_type='max', e2e_model_dir=None, e2e_pgnet_mode='fast', e2e_pgnet_polygon=True, e2e_pgnet_score_thresh=0.5, e2e_pgnet_valid_set='totaltext', enable_mkldnn=False, gpu_mem=500, help='==SUPPRESS==', image_dir=None, ir_optim=True, label_list=['0', '180'], lang='ch', layout_path_model='lp://PubLayNet/ppyolov2_r50vd_dcn_365e_publaynet/config', max_batch_size=10, max_text_length=25, min_subgraph_size=15, ocr_version='PP-OCRv2', output='./output/table', precision='fp32', process_id=0, rec=True, rec_algorithm='CRNN', rec_batch_num=6, rec_char_dict_path='D:\\anaconda3\\envs\\paddleocr\\lib\\site-packages\\paddleocr\\ppocr\\utils\\ppocr_keys_v1.txt', rec_image_shape='3, 32, 320', rec_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\rec\\ch\\ch_PP-OCRv2_rec_infer', save_log_path='./log_output/', show_log=True, structure_version='STRUCTURE', table_char_dict_path=None, table_char_type='en', table_max_len=488, table_model_dir=None, total_process_num=1, type='ocr', use_angle_cls=True, use_dilation=False, use_gpu=False, use_mp=False, use_onnx=False, use_pdserving=False, use_space_char=True, use_tensorrt=False, vis_font_path='./doc/fonts/simfang.ttf', warmup=True)
+魔法史还是学院活动？1.魔法史 2.学院活动 3.退出
+Namespace(benchmark=False, cls_batch_num=6, cls_image_shape='3, 48, 192', cls_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\cls\\ch_ppocr_mobile_v2.0_cls_infer', cls_thresh=0.9, cpu_threads=10, det=True, det_algorithm='DB', det_db_box_thresh=0.6, det_db_score_mode='fast', det_db_thresh=0.3, det_db_unclip_ratio=1.5, det_east_cover_thresh=0.1, det_east_nms_thresh=0.2, det_east_score_thresh=0.8, det_limit_side_len=960, det_limit_type='max', det_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\det\\ch\\ch_PP-OCRv2_det_infer', det_pse_box_thresh=0.85, det_pse_box_type='box', det_pse_min_area=16, det_pse_scale=1, det_pse_thresh=0, det_sast_nms_thresh=0.2, det_sast_polygon=False, det_sast_score_thresh=0.5, drop_score=0.5, e2e_algorithm='PGNet', e2e_char_dict_path='./ppocr/utils/ic15_dict.txt', e2e_limit_side_len=768, e2e_limit_type='max', e2e_model_dir=None, e2e_pgnet_mode='fast', e2e_pgnet_polygon=True, e2e_pgnet_score_thresh=0.5, e2e_pgnet_valid_set='totaltext', enable_mkldnn=False, gpu_mem=500, help='==SUPPRESS==', image_dir=None, ir_optim=True, label_list=['0', '180'], lang='ch', layout_path_model='lp://PubLayNet/ppyolov2_r50vd_dcn_365e_publaynet/config', max_batch_size=10, max_text_length=25, min_subgraph_size=15, ocr_version='PP-OCRv2', output='./output/table', precision='fp32', process_id=0, rec=True, rec_algorithm='CRNN', rec_batch_num=6, rec_char_dict_path='D:\\anaconda3\\envs\\paddleocr\\lib\\site-packages\\paddleocr\\ppocr\\utils\\ppocr_keys_v1.txt', rec_image_shape='3, 32, 320', rec_model_dir='C:\\Users\\SAT/.paddleocr/2.3.0.2\\ocr\\rec\\ch\\ch_PP-OCRv2_rec_infer', save_log_path='./log_output/', show_log=True, structure_version='STRUCTURE', table_char_dict_path=None, table_char_type='en', table_max_len=488, table_model_dir=None, total_process_num=1, type='ocr', use_angle_cls=True, use_dilation=False, use_gpu=False, use_mp=False, use_onnx=False, use_pdserving=False, use_space_char=True, use_tensorrt=False, vis_font_path='./doc/fonts/simfang.ttf', warmup=True)
+魔法史还是学院活动？1.魔法史 2.学院活动 3.退出
+ocr结果: ['哈利、罗恩和赫敏最初怀疑谁想要偷走魔法石？', ['西弗勒斯斯内普', '鲁伯海格', '拉环', '博格']]
+题库匹配结果: (('哈利、罗恩和赫敏最初怀疑谁想要偷走魔法石？', '西弗勒斯斯内普'), 100, 286)
+选项匹配结果: [('西弗勒斯斯内普', 100, 0), ('鲁伯海格', 0, 1), ('拉环', 0, 2), ('博格', 0, 3)]
+这题选 A
+ocr结果: ['下列哪一种不是常见的娲材料？', ['镍', '黄铜', '锡', '铜']]
+题库匹配结果: (('下列哪一种不是常见的坩锅材料？', '镍'), 83, 798)
+选项匹配结果: [('镍', 100, 0), ('黄铜', 0, 1), ('锡', 0, 2), ('铜', 0, 3)]
+这题选 A
+ocr结果: ['奇洛教授用了哪种乐器使路威放松警惕？', ['被施了魔法的风笛', '被施了魔法的琵琶', '被施了魔法的长笛', '被施了魔法的竖琴']]
+题库匹配结果: (('奇落教授用了哪种乐器使路威放松警惕？', '被施了魔法的竖琴'), 74, 598)
+选项匹配结果: [('被施了魔法的竖琴', 100, 3), ('被施了魔法的风笛', 75, 0), ('被施了魔法的琵琶', 75, 1), ('被施了魔法的长笛', 75, 2)]
+这题选 D
+ocr结果: ['谁在阿拉戈克的葬礼上发表了讲话？', ['西弗勒斯斯内普', '霍拉斯斯拉格霍恩', '费伦泽', '阿不思邓布利多']]
+题库匹配结果: (('谁在阿拉戈克的葬礼上发表了讲话？', '霍拉斯斯拉格霍恩'), 100, 726)
+选项匹配结果: [('霍拉斯斯拉格霍恩', 100, 1), ('西弗勒斯斯内普', 27, 0), ('费伦泽', 0, 2), ('阿不思邓布利多', 0, 3)]
+这题选 B
+ocr结果: ['历史上赫敏格兰杰熬制的第一份魔药叫什么？', ['福灵剂', '活地狱汤剂', '治疗疥疮的药水', '复方汤剂']]
+题库匹配结果: (('历史上赫敏格兰杰熬制的第一份魔药叫什么？', '治疗疥疮'), 100, 40)
+选项匹配结果: [('治疗疥疮的药水', 73, 2), ('福灵剂', 0, 0), ('活地狱汤剂', 0, 1), ('复方汤剂', 0, 3)]
+这题选 C
+ocr结果: ['什么魔法游戏与麻瓜的弹子游戏类似？', ['巫师棋', '高布石游戏', '爆炸牌', '巧克力蛙卡片']]
+题库匹配结果: (('什么魔法游戏与麻瓜的弹子游戏类似？', '高布石游戏'), 100, 649)
+选项匹配结果: [('高布石游戏', 100, 1), ('巫师棋', 0, 0), ('爆炸牌', 0, 2), ('巧克力蛙卡片', 0, 3)]
+这题选 B
+ocr结果: ['最后一个被摧毁的魂器是什么？', ['赫尔加赫奇帕奇的金杯', '萨拉查斯莱特林的挂坠盒', '罗伊纳拉文克劳的冠冕', '纳吉尼']]
+题库匹配结果: (('最后一个被摧毁的魂器是什么？', '纳吉尼'), 100, 961)
+选项匹配结果: [('纳吉尼', 100, 3), ('罗伊纳拉文克劳的冠冕', 15, 2), ('赫尔加赫奇帕奇的金杯', 0, 0), ('萨拉查斯莱特林的挂坠盒', 0, 1)]
+这题选 D
+ocr结果: ['哈利波特学生时，罗米达万尼曾十分迫切地想与他约', ['他的魔药课成绩很好', '他是被选中的孩子', '他是魁地奇球队的队长', '她想让罗恩感到妒忌']]
+题库匹配结果: (('哈利波特学生时，罗米达万妮曾十分迫切的想与他约会，其中原因是？', '他是被选中的孩子'), 68, 325)
+选项匹配结果: [('他是被选中的孩子', 100, 1), ('他是魁地奇球队的队长', 33, 2), ('他的魔药课成绩很好', 24, 0), ('她想让罗恩感到妒忌', 0, 3)]
+这题选 B
+ocr结果: ['三强争霸赛的第一个项目中，塞德里克挑战了什么龙？', ['威尔士绿龙', '匈牙利树蜂', '中国火球龙', '瑞典短鼻龙']]
+题库匹配结果: (('三强争霸赛的第一个项目中，塞德里克挑战了什么龙？', '瑞典短鼻龙'), 100, 623)
+选项匹配结果: [('瑞典短鼻龙', 100, 3), ('威尔士绿龙', 20, 0), ('中国火球龙', 20, 2), ('匈牙利树蜂', 0, 1)]
+这题选 D
+ocr结果: ['吉德罗洛哈特教授失忆后被收治于圣芒戈医院几楼？', ['二楼', '四楼', '五楼', '三楼']]
+题库匹配结果: (('吉德罗洛哈特教授失忆后被收治于圣芒戈医院几楼？', '五楼'), 100, 443)
+选项匹配结果: [('五楼', 100, 2), ('二楼', 50, 0), ('四楼', 50, 1), ('三楼', 50, 3)]
+这题选 C
+ocr结果: ['疯眼汉穆迪在魔法部担任什么职位时受了很多伤？', ['魔法部', '药剂师', '傲罗', '龙学家']]
+题库匹配结果: (('疯眼汉穆迪在魔法部担任什么职位时受了很多伤？', '傲罗'), 100, 255)
+选项匹配结果: [('傲罗', 100, 2), ('魔法部', 0, 0), ('药剂师', 0, 1), ('龙学家', 0, 3)]
+这题选 C
+ocr结果: ['多年前小矮星被得被分到了哪个学院？', ['格兰芬多', '赫奇帕奇', '斯莱特林', '拉文克劳']]
+题库匹配结果: (('多年前小矮星彼得被分到了哪个学院？', '格兰芬多'), 81, 232)
+选项匹配结果: [('格兰芬多', 100, 0), ('赫奇帕奇', 0, 1), ('斯莱特林', 0, 2), ('拉文克劳', 0, 3)]
+这题选 A
+ocr结果: ['罗斯默塔夫人把施了毒咒的宝石项链给了谁？', ['金妮韦斯莱', '安吉丽娜约翰逊', '赫敏格兰杰', '凯蒂贝尔']]
+题库匹配结果: (('罗斯默塔夫人把施了毒咒的宝石项链给了谁？', '凯蒂贝尔'), 100, 523)
+选项匹配结果: [('凯蒂贝尔', 100, 3), ('金妮韦斯莱', 0, 0), ('安吉丽娜约翰逊', 0, 1), ('赫敏格兰杰', 0, 2)]
+这题选 D
+ocr结果: ['弗雷德和乔治使用什么东西向乌姆里奇示威？', ['发声糖', '韦斯莱烟花', '增龄剂', '复方汤剂']]
+题库匹配结果: (('弗雷德和乔治使用什么东西向乌姆里奇示威？', '韦斯莱烟花'), 100, 266)
+选项匹配结果: [('韦斯莱烟花', 100, 1), ('发声糖', 0, 0), ('增龄剂', 0, 2), ('复方汤剂', 0, 3)]
+这题选 B
+ocr结果: ['莫特拉鼠触角汁的主要用途是什么？', ['帮助睡眠', '调味', '魔药', '治疗伤口']]
+题库匹配结果: (('莫特拉鼠汁的主要用途是什么？', '治疗伤口'), 79, 1040)
+选项匹配结果: [('治疗伤口', 100, 3), ('帮助睡眠', 0, 0), ('调味', 0, 1), ('魔药', 0, 2)]
+这题选 D

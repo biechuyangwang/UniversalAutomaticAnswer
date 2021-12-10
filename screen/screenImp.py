@@ -15,7 +15,7 @@ import cv2
 sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
 from UniversalAutomaticAnswer.conf.confImp import get_yaml_file # 加入自定义包
 
-class ScreenImp(object): # 拼音匹配算法对的解决方案
+class ScreenImp(object):
     """
     屏幕相关算法：
     1. 屏幕进程设置
@@ -30,16 +30,10 @@ class ScreenImp(object): # 拼音匹配算法对的解决方案
         self.screen_hwnd = self.conf_data['windowsScreen']['screen_hwnd']
 
         self.imgpath = self.conf_data['path']['imgpath']
-        # self.imgcropStartpath = self.conf_data['path']['imgcropStartpath']
-        # self.imgcropContinuepath = self.conf_data['path']['imgcropContinuepath']
-        # self.imgcropCountdownpath = self.conf_data['path']['imgcropCountdownpath']
-        # self.imgcropQpath = self.conf_data['path']['imgcropQpath']
-        # self.imgcropApath = self.conf_data['path']['imgcropApath']
-        # self.imgcropBpath = self.conf_data['path']['imgcropBpath']
-        # self.imgcropCpath = self.conf_data['path']['imgcropCpath']
-        # self.imgcropDpath = self.conf_data['path']['imgcropDpath']
+        self.ravenclaw_imgpath = self.conf_data['path']['ravenclaw_imgpath']
 
         self.rectStart = self.conf_data['imgRect']['rectStart']
+        self.ravenclaw_rectStart = self.conf_data['imgRect']['ravenclaw_rectStart']
         self.rectContinue = self.conf_data['imgRect']['rectContinue']
         self.rectCountdown = self.conf_data['imgRect']['rectCountdown']
         self.rectQ = self.conf_data['imgRect']['rectQ']
@@ -47,6 +41,12 @@ class ScreenImp(object): # 拼音匹配算法对的解决方案
         self.rectB = self.conf_data['imgRect']['rectB']
         self.rectC = self.conf_data['imgRect']['rectC']
         self.rectD = self.conf_data['imgRect']['rectD']
+        self.rectPerson1State = self.conf_data['imgRect']['rect_person1_state']
+        self.rectPerson2State = self.conf_data['imgRect']['rect_person2_state']
+        self.rectPerson3State = self.conf_data['imgRect']['rect_person3_state']
+        self.ravenclawRectPerson1State = self.conf_data['imgRect']['ravenclaw_rect_person1_state']
+        self.ravenclawRectPerson2State = self.conf_data['imgRect']['ravenclaw_rect_person2_state']
+        self.ravenclawRectPerson3State = self.conf_data['imgRect']['ravenclaw_rect_person3_state']
     
     def qtpixmap_to_cvimg(self, qtpixmap):
     # pyqt5的图片数据转ndarray
@@ -74,14 +74,29 @@ class ScreenImp(object): # 拼音匹配算法对的解决方案
             return win_rect, img # retur win_rect and win_img
         return None
     
-    def get_class_startMatchBtn(self, img):
+    def get_startMatchBtn(self, img):
         return img[self.rectStart[1]:self.rectStart[3], self.rectStart[0]:self.rectStart[2], :]  # [150,470,940,660]->img[470:660,150:940,:]
+
+    def get_ravenclaw_startMatchBtn(self, img):
+        return img[self.rectStart[1]:self.rectStart[3], self.rectStart[0]:self.rectStart[2], :]
 
     def get_continueBtn(self, img):
         return img[self.rectContinue[1]:self.rectContinue[3], self.rectContinue[0]:self.rectContinue[2], :]
 
     def get_countdownBtn(self, img):
         return img[self.rectCountdown[1]:self.rectCountdown[3], self.rectCountdown[0]:self.rectCountdown[2], :]
+
+    def get_personState(self, img):
+        person1State = img[self.rectPerson1State[1]:self.rectPerson1State[3], self.rectPerson1State[0]:self.rectPerson1State[2], :]
+        person2State = img[self.rectPerson2State[1]:self.rectPerson2State[3], self.rectPerson2State[0]:self.rectPerson2State[2], :]
+        person3State = img[self.rectPerson3State[1]:self.rectPerson3State[3], self.rectPerson3State[0]:self.rectPerson3State[2], :]
+        return person1State, person2State, person3State
+    
+    def get_ravenclaw_personState(self, img):
+        person1State = img[self.ravenclawRectPerson1State[1]:self.ravenclawRectPerson1State[3], self.ravenclawRectPerson1State[0]:self.ravenclawRectPerson1State[2], :]
+        person2State = img[self.ravenclawRectPerson2State[1]:self.ravenclawRectPerson2State[3], self.ravenclawRectPerson2State[0]:self.ravenclawRectPerson2State[2], :]
+        person3State = img[self.ravenclawRectPerson3State[1]:self.ravenclawRectPerson3State[3], self.ravenclawRectPerson3State[0]:self.ravenclawRectPerson3State[2], :]
+        return person1State, person2State, person3State
 
     def get_questionAndoptionsBtn(self, img):
         QBtn = img[self.rectQ[1]:self.rectQ[3], self.rectQ[0]:self.rectQ[2], :]

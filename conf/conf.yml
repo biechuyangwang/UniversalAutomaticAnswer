@@ -1,12 +1,15 @@
 path:
   imgpath: "img/harrypotter_question.jpg"
+  ravenclaw_imgpath: "img/harrypotter_question_xueyuan.jpg"
+  data_path: "csvImp/harrypotter_questions.csv"
 
 windowsScreen:
   resolution: [1600,900]
-  screen_hwnd: "android9"
+  screen_hwnd: "android9" 
 
 imgRect:
   rectStart: [1269,810,1437,864]
+  ravenclaw_rectStart: [1254,810,1465,864]
   rectContinue: [1189,864,1323,918]
   rectCountdown: [770,40,840,100]
   rectQ: [150,470,940,660]
@@ -14,6 +17,13 @@ imgRect:
   rectB: [900,700,1350,760]
   rectC: [120,820,500,870]
   rectD: [900,820,1350,870]
+  rect_person1_state: [527, 367, 644, 481]
+  rect_person2_state: [968, 314, 1090, 428]
+  rect_person3_state: [1150, 293, 1275, 415]
+  ravenclaw_rect_person1_state: [395, 250, 555, 350]
+  ravenclaw_rect_person2_state: [660, 265, 820, 370]
+  ravenclaw_rect_person3_state: [940, 265, 1100, 370]
+
 
 coordinate:
   coordinateWindowsRect: [1,2,3,4]
