@@ -34,7 +34,7 @@ class DataMatcher(object): # 拼音匹配算法对的解决方案
 		scored = {}
 		for result in results:
 			scored[result[0]] = max(result[1], scored.get(result[0], 0))
-			if scored[result[0]] < 50:
+			if scored[result[0]] == 0:
 				scored.pop(result[0])
 		# print(scored)
 		results = sorted([(self.raw_data[dataset[sent]], score, dataset[sent]) for sent, score in scored.items()], key=lambda x: x[1], reverse=True)
@@ -58,8 +58,8 @@ if __name__ == '__main__':
     conf_path = 'conf/conf.yml'
     conf_data = get_yaml_file(conf_path)
     data_matcher = DataMatcher(conf_data)
-    info = '弗农德思礼所在的公司的名字是什么？'
-    options = ['格朗宁', '道朗宁', '宁格道', '格朗道']
+    info = 'I11英寸'
+    options = ['11英寸', '12英寸', '8英寸', '13英寸']
 
     answer_list = list(data_matcher.get_close_match(info))
     answer = answer_list[0][0][1]

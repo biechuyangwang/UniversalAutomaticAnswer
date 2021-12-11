@@ -5,7 +5,7 @@ def filterQuestion(question_content):
     r1 = "[\sa-zA-Z．：“”（）\'\"《》\-:\.：·\*\.\+\$\^\[\]\(\)\{\}\|]+"
     import re
     content_list_sub = [re.sub(r1, '', content) for content in question_content]
-    question = list(filter(lambda s:len(s) >= 8,content_list_sub))
+    question = list(filter(lambda s:len(s) >= 6,content_list_sub))
     return question
 
 def filterLine(line_content):

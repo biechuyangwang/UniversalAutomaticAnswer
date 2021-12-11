@@ -12,7 +12,7 @@ imgRect:
   ravenclaw_rectStart: [1254,810,1465,864]
   rectContinue: [1189,864,1323,918]
   rectCountdown: [770,40,840,100]
-  rectQ: [150,470,940,660]
+  rectQ: [150,470,1000,660]
   rectA: [120,700,500,760]
   rectB: [900,700,1350,760]
   rectC: [120,820,500,870]
