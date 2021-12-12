@@ -1,0 +1,10 @@
+pandas>=1.3.4
+PyYAML>=6.0
+pywin32
+PyQt5
+numpy
+matplotlib
+opencv-python>=4.4
+paddlepaddle
+paddleocr
+thefuzz
