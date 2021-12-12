@@ -48,7 +48,7 @@ def make_print_to_file(path='./'):
         def flush(self):
             pass
 
-    fileName = datetime.datetime.now().strftime('day'+'%Y_%m_%d')
+    fileName = datetime.datetime.now().strftime('log_'+'%Y_%m_%d_%H')
     sys.stdout = Logger(fileName + '.log', path=path)
 
 # 记录错题
@@ -122,7 +122,7 @@ def get_question_answer(img):
     print('ocr结果:', [question,options])
 
     answer_list = list(data_matcher.get_close_match(question))
-    if len(answer_list) == 0 or list(answer_list[0])[1] < 50:
+    if len(answer_list) == 0 or list(answer_list[0])[1] < 40:
         print('没有匹配到题库')
         return res
     else:
@@ -242,19 +242,26 @@ if __name__ == '__main__':
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
             else:
-                print('答案都没得抄！')
+                pass
+                # print('答案都没得抄！')
             # 错题就先不计了
+            time.sleep(0.9)
             continue
-        elif (is_answered == 0 and countdown_num > 0):
+        elif (is_answered == 0 and countdown_num == 0):
             print('这题盲猜C')
             x,y = coordinate[2][0], coordinate[2][1]
             left_click(win_rect[0]+x,win_rect[1]+y,2)
-            is_answered = 1
-        if countdown_num == 0:
+            is_answered = 2 # 表示没得抄，盲猜
+        if is_answered == 2 and countdown_num == 0:
             in_rect, img = screen.get_screenshot()
             import datetime
             fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
-            img.save('img/harry_'+fileName)
+            
+            # from PIL import Image
+            # im = Image.fromarray(img)
+            # im.save('img/harry_'+fileName)
+            cv2.imwrite('img/harry_'+fileName, img)
+            time.sleep(2)
 
             
 

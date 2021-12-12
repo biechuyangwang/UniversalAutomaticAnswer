@@ -1,31 +1,33 @@
 path:
-  imgpath: "img/harrypotter_question.jpg"
-  ravenclaw_imgpath: "img/harrypotter_question_xueyuan.jpg"
-  data_path: "csvImp/harrypotter_questions.csv"
+  imgpath: "img/harrypotter_question.jpg" # 调试功能用
+  ravenclaw_imgpath: "img/harrypotter_question_xueyuan.jpg" # 调试功能用
+  data_path: "csvImp/harrypotter_questions.csv" # 题库
+
 
 windowsScreen:
-  resolution: [1600,900]
-  screen_hwnd: "android9" 
-
-imgRect:
-  rectStart: [1269,810,1437,864]
-  ravenclaw_rectStart: [1254,810,1465,864]
-  rectContinue: [1189,864,1323,918]
-  rectCountdown: [770,40,840,100]
-  rectQ: [150,470,1000,660]
-  rectA: [120,700,500,760]
-  rectB: [900,700,1350,760]
-  rectC: [120,820,500,870]
-  rectD: [900,820,1350,870]
-  rect_person1_state: [527, 367, 644, 481]
-  rect_person2_state: [968, 314, 1090, 428]
-  rect_person3_state: [1150, 293, 1275, 415]
-  ravenclaw_rect_person1_state: [395, 250, 555, 350]
-  ravenclaw_rect_person2_state: [660, 265, 820, 370]
-  ravenclaw_rect_person3_state: [940, 265, 1100, 370]
+  resolution: [1600,900] # 分辨率，暂不支持修改
+  screen_hwnd: "android9" # 要截屏的句柄的名字，可以使用script包中的getWindowsHwnd.py来获取
 
 
-coordinate:
+imgRect: # 1600*900分辨率下的块坐标
+  rectStart: [1269,810,1437,864] # 魔法史开始按钮的坐标
+  ravenclaw_rectStart: [1254,810,1465,864] # 学院活动开始按钮的坐标
+  rectContinue: [1189,864,1323,918] # 魔法史继续按钮的坐标
+  rectCountdown: [770,40,840,100] # 学院活动继续按钮的坐标
+  rectQ: [150,470,1000,660] # 问题块的坐标
+  rectA: [120,700,500,760] # 选项A的坐标
+  rectB: [900,700,1350,760] # 选项B的坐标
+  rectC: [120,820,500,870] # 选项C的坐标
+  rectD: [900,820,1350,870] # 选项D的坐标
+  rect_person1_state: [527, 367, 644, 481] # 魔法史抄答案坐标1
+  rect_person2_state: [968, 314, 1090, 428] # 魔法史抄答案坐标2
+  rect_person3_state: [1150, 293, 1275, 415] # 魔法史抄答案坐标3
+  ravenclaw_rect_person1_state: [395, 250, 555, 350] # 学院活动抄答案坐标1
+  ravenclaw_rect_person2_state: [660, 265, 820, 370] # 学院活动抄答案坐标2
+  ravenclaw_rect_person3_state: [940, 265, 1100, 370] # 学院活动抄答案坐标3
+
+
+coordinate: # 这个可以通过块坐标计算，特殊业务逻辑时自定义
   coordinateWindowsRect: [1,2,3,4]
   coordinateStart: [1,2]
   coordinateContinue: [1,2]
@@ -33,3 +35,16 @@ coordinate:
   coordinateB: [1,2]
   coordinateC: [1,2]
   coordinateD: [1,2]
+
+
+search: # 搜索引擎参数
+  baidu:
+    rn: 50 # 每页显示的条数，支持10,20,50
+    lm: 7 # 从最近更新时间，支持0,1,7,30,360。其中0表示无限制
+    ct: 1 # 表示搜索结果的语言，支持0,1,2。其中0表示无限制，1表示简体，2表示繁体
+
+  google:
+    lr: '' # 语言
+    cr: '' # 地区
+    as_qdr: 'all' # 最近更新时间。all表示任意，m表示一月内，y表示一年内
+    as_occt: 'any' # 关键字出现位置。all表示任意，body表示网页文本，title表示网页标题

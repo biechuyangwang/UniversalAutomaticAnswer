@@ -1,4 +1,9 @@
 /.git/
-/__pycache__/
-/*/__pycache__/
-/log/*.log
+**/__pycache__
+**/*.pyc
+**/*.csv
+**/*.log
+**/*.json
+**/*.jpg
+**/*.png
+csvImp/harrypotter_questions.csv

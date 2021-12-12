@@ -58,8 +58,8 @@ if __name__ == '__main__':
     conf_path = 'conf/conf.yml'
     conf_data = get_yaml_file(conf_path)
     data_matcher = DataMatcher(conf_data)
-    info = 'I11英寸'
-    options = ['11英寸', '12英寸', '8英寸', '13英寸']
+    info = '伸缩眼酸味爆爆糖'
+    options = ['伸缩眼', '糖', '发烧糖', '拼写检查羽毛笔']
 
     answer_list = list(data_matcher.get_close_match(info))
     answer = answer_list[0][0][1]
