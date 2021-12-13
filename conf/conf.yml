@@ -7,7 +7,7 @@ path:
 windowsScreen:
   resolution: [1600,900] # 分辨率，暂不支持修改
   screen_hwnd: "android9" # 要截屏的句柄的名字，可以使用script包中的getWindowsHwnd.py来获取
-
+  # screen_hwnd: "哈利波特:魔法觉醒 - MuMu模拟器"
 
 imgRect: # 1600*900分辨率下的块坐标
   rectStart: [1269,810,1437,864] # 魔法史开始按钮的坐标

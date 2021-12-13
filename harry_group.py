@@ -9,6 +9,7 @@ from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定�
 from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
 from UniversalAutomaticAnswer.util.filter import filterQuestion, filterLine, filterPersonState
 from UniversalAutomaticAnswer.match.matchImp import DataMatcher, match_options
+from UniversalAutomaticAnswer.httpImp.search import searchImp
 import cv2
 import time
 import pandas as pd
@@ -70,11 +71,11 @@ def write_new_question(info, answer_flag=""):
 
 def left_click(x,y,times=1):
     win32api.SetCursorPos((x,y))
-    import time
     while times:
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
         times -= 1
+    win32api.SetCursorPos((1200,848)) # 每次答完题，鼠标先移到D选项位置
     # print('左键点击',x,y)
 
 def is_start(img, str_start):
@@ -91,7 +92,7 @@ def is_start(img, str_start):
 
 def get_question_answer(img):
     # 一次答题流程
-    res = []
+    # res = []
     QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
     resultq = ocr.ocr(QBtn)
     resulta = ocr.ocr(ABtn)
@@ -120,7 +121,10 @@ def get_question_answer(img):
         optiond = filterLine(contentd)[0]
     options = [optiona, optionb, optionc, optiond]
     print('ocr结果:', [question,options])
+    return question, options
 
+def get_match_result(question, options):
+    res = []
     answer_list = list(data_matcher.get_close_match(question))
     if len(answer_list) == 0 or list(answer_list[0])[1] < 40:
         print('没有匹配到题库')
@@ -155,8 +159,8 @@ if __name__ == '__main__':
     # 截屏
     screen = ScreenImp(conf_data)
     sel = '1'
-    sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.退出\n')
-    if sel == '3':
+    sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.社团答题 4.退出 \n')
+    if sel == '4':
         exit()
     while True:
         win_rect, img= screen.get_screenshot()
@@ -172,6 +176,8 @@ if __name__ == '__main__':
         if (content_countdown!=None) and len(content_countdown) > 0 and content_countdown[0].isdigit():
             countdown_num = int(content_countdown[0])
         else: # 没识别到计时器，就识别开始和继续按钮
+            # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
+            time.sleep(0.2)
             if sel == '1': # 魔法史
                 flag = is_start(img, '匹配上课')
                 if(flag): # 识别到了就跳过，重新截图
@@ -180,6 +186,8 @@ if __name__ == '__main__':
                 flag = is_start(img, '学院活动匹配')
                 if(flag): # 识别到了就跳过，重新截图
                     continue
+            elif sel == '3': # 社团答题，手动开始
+                continue
             # 识别继续按钮
             img_continue = screen.get_continueBtn(img)
             result_continue = ocr.ocr(img_continue)
@@ -192,12 +200,17 @@ if __name__ == '__main__':
                     time.sleep(10)
                     left_click(win_rect[0]+x,win_rect[1]+y,1)
                 continue
-        if countdown_num == 12:
+        if countdown_num == 20:
+            if sel == '3': # 社团答题才有抢答
+                x,y = coordinate[3][0], coordinate[3][1]  # 进去，先盲猜D，D没人选，大概率能首抢
+                left_click(win_rect[0]+x,win_rect[1]+y,2)
+                # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
             is_answered = 0
             time.sleep(0.1)
             win_rect, img= screen.get_screenshot()
             # img = cv2.imread(screen.ravenclaw_imgpath)
-            res = get_question_answer(img)
+            question, options = get_question_answer(img)
+            res = get_match_result(question, options)
             if len(res) >0:
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
@@ -205,60 +218,19 @@ if __name__ == '__main__':
                 is_answered = 1
                 time.sleep(8)
             else:
-                print('抄答案吧！')
+                print('百度大法！')
+                searchimp = searchImp(conf_data)
+                ans_baidu = searchimp.baidu(question, options) # [(频次，内容，序号),()]
+                ans = ans_baidu[0][2]
+                # print('百度答案：',ans_baidu)
+                x,y = coordinate[ans][0], coordinate[ans][1]
+                left_click(win_rect[0]+x,win_rect[1]+y,2)
             continue
-        if (is_answered == 0 and countdown_num > 3):
-            if countdown_num >=10:
-                win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
-            # img = cv2.imread(screen.ravenclaw_imgpath)
-            if sel == '1':
-                person1State, person2State, person3State = screen.get_personState(img)
-            elif sel == '2':
-                person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
-            contentPerson1 = ocr.ocr_content(person1State)
-            contentPerson2 = ocr.ocr_content(person2State)
-            contentPerson3 = ocr.ocr_content(person3State)
-            state1 = filterPersonState(contentPerson1)
-            state2 = filterPersonState(contentPerson2)
-            state3 = filterPersonState(contentPerson3)
-            if state1 == 'A' or state2 == 'A' or state3 == 'A':
-                print('这题抄A')
-                x,y = coordinate[0][0], coordinate[0][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
-                is_answered = 1
-            elif state1 == 'B' or state2 == 'B' or state3 == 'B':
-                print('这题抄B')
-                x,y = coordinate[1][0], coordinate[1][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
-                is_answered = 1
-            elif state1 == 'C' or state2 == 'C' or state3 == 'C':
-                print('这题抄C')
-                x,y = coordinate[2][0], coordinate[2][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
-                is_answered = 1
-            elif state1 == 'D' or state2 == 'D' or state3 == 'D':
-                print('这题抄D')
-                x,y = coordinate[3][0], coordinate[3][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
-                is_answered = 1
-            else:
-                pass
-                # print('答案都没得抄！')
-            # 错题就先不计了
-            time.sleep(0.9)
-            continue
-        elif (is_answered == 0 and countdown_num == 0):
-            print('这题盲猜C')
-            x,y = coordinate[2][0], coordinate[2][1]
-            left_click(win_rect[0]+x,win_rect[1]+y,2)
-            is_answered = 2 # 表示没得抄，盲猜
-        if is_answered == 2 and countdown_num == 0:
+        else :
+            time.sleep(0.5) # 题答完了，等待期间0.5秒轮询一次
+        if is_answered == 0 and countdown_num == 0:
             in_rect, img = screen.get_screenshot()
             import datetime
-            fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
-            
-            # from PIL import Image
-            # im = Image.fromarray(img)
-            # im.save('img/harry_'+fileName)
+            fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_group.png'
             cv2.imwrite('img/harry_'+fileName, img)
             time.sleep(2)

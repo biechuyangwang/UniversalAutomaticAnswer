@@ -1,6 +1,155 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+写了个简单的程序，用来以后讲解如何扩展UAA
+声明：我党不要怪我，我也是为了学习而写的，不商业化
+""" 
+
+import sys
+sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
+from UniversalAutomaticAnswer.conf.confImp import get_yaml_file
+from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定义包
+from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
+from UniversalAutomaticAnswer.util.filter import filterQuestion, filterLine, filterEngLine, filterPersonState
+from UniversalAutomaticAnswer.httpImp.search import searchImp
+import time
+
+# 获取配置文件
+conf_path = 'conf/conf.yml'
+conf_data = get_yaml_file(conf_path)
+
+# 初始化ocr模型
+ocr = OCRImp(conf_data)
+while(True):
+    continue_flag = input("是否继续？(y/n)")
+    if(continue_flag == 'n'):
+        break
+    start = time.time()*1000
+    screen = ScreenImp(conf_data)
+    win_rect, img= screen.get_screenshot()
+    rect = [577,160,1025,900]
+    imgrect = img[rect[1]:rect[3], rect[0]:rect[2], :]
+    result_imgrect = ocr.ocr(imgrect)
+    content_imgrect = ocr.ocr_content(result_imgrect)
+    print('ocr耗时：{0:4f}ms'.format(time.time()*1000-start))
+    # print(result_imgrect)
+    # print(content_imgrect)
+
+
+    if '题' in content_imgrect[0]:
+        question_type = content_imgrect[0]
+        question_num = content_imgrect[1].split('/')
+    else:
+        question_type = content_imgrect[1]
+        question_num = content_imgrect[0].split('/')
+
+    if '填空题' in question_type:
+        question_type = '填空题'
+    elif '判断题' in question_type:
+        question_type = '判断题'
+    elif '单选题' in question_type:
+        question_type = '单选题'
+    elif '多选题' in question_type:
+        question_type = '多选题'
+
+    # question_cur_num = question_num[0]
+    # question_total_num = question_num[1]
+    print('题目类型：',question_type)
+    # print('题目数量：',question_total_num)
+    # print('当前题目：',question_cur_num)
+
+
+    # content_imgrect = content_imgrect[2:i]
+    if question_type == '填空题':
+        i=-1
+        for idx,x in enumerate(content_imgrect):
+            if '来源：' in x:
+                i=idx
+                break
+        # content_imgrect = content_imgrect[2:i]
+        # questions = ['1931年，中华苏维埃共和国临时中央政府在', '成立。']
+        question = ''.join(questions)
+        print('题目：',question)
+    elif question_type == '多选题':
+        question_cur = -1
+        options_cur = -1
+        options_end = -1
+        for idx,x in enumerate(content_imgrect):
+            if '来源：' in x:
+                question_cur=idx
+                continue
+            if 'A.' in x:
+                options_cur=idx
+                continue
+            if '出题：' in x:
+                options_end=idx
+                break
+        # print(question_cur, options_cur, options_end)
+        questions = content_imgrect[2:question_cur]
+        """
+        content_imgrect = ['2/5', '/多选题', '1939年冬至1940年春，国民党顽固派掀起第一次', '反共高潮，中国共产党给坚决回击，并在总结', '仅摩擦斗争经\
+    验的基础上，为了坚持、巩固和扩', '大抗日民族统一战线，制定了“', '"的策略方针。', '来源：《中国共产党简史》', '（人民出版社\
+    、中共', '党史出版社2021年版', 'A.发展进步势力', 'B.争取中间势力', 'C.孤立顽固势力', '出题：中国人民大学中共党史党建研究院\
+    ', '9查看提示']
+        """
+        question = ''.join(questions)
+        if options_end != -1:
+            options = content_imgrect[options_cur:options_end]
+        else:
+            options = content_imgrect[options_cur:]
+        print('题目：',question)
+        print('选项：',options)
+        options = filterEngLine(options)
+        # print('过滤后的选项：',options)
+
+        searchimp = searchImp(conf_data)
+        ans_baidu = searchimp.baidu(question, options)
+        print('百度答案：',ans_baidu)
+    elif question_type == '单选题':
+        question_cur = -1
+        options_cur = -1
+        options_end = -1
+        for idx,x in enumerate(content_imgrect):
+            if '来源：' in x:
+                question_cur=idx
+                continue
+            if 'A.' in x:
+                options_cur=idx
+                continue
+            if '出题：' in x:
+                options_end=idx
+                break
+        # print(question_cur, options_cur, options_end)
+        questions = content_imgrect[2:question_cur]
+        """
+        content_imgrect = ['2/5', '/多选题', '1939年冬至1940年春，国民党顽固派掀起第一次', '反共高潮，中国共产党给坚决回击，并在总结', '仅摩擦斗争经\
+    验的基础上，为了坚持、巩固和扩', '大抗日民族统一战线，制定了“', '"的策略方针。', '来源：《中国共产党简史》', '（人民出版社\
+    、中共', '党史出版社2021年版', 'A.发展进步势力', 'B.争取中间势力', 'C.孤立顽固势力', '出题：中国人民大学中共党史党建研究院\
+    ', '9查看提示']
+        """
+        question = ''.join(questions)
+        if options_end != -1:
+            options = content_imgrect[options_cur:options_end]
+        else:
+            options = content_imgrect[options_cur:]
+        print('题目：',question)
+        print('选项：',options)
+        options = filterEngLine(options)
+        # print('过滤后的选项：',options)
+
+        searchimp = searchImp(conf_data)
+        ans_baidu = searchimp.baidu(question, options)
+        print('百度答案：',ans_baidu)
+    print('总耗时：{0:4f}ms'.format(time.time()*1000-start))
+    # import matplotlib.pyplot as plt
+    # plt.imshow(imgrect) # 577,160,1025,555
+    # plt.show()
+
+
+
+
+"""
 import sys
 sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
 
@@ -262,3 +411,4 @@ if __name__ == '__main__':
             # im.save('img/harry_'+fileName)
             cv2.imwrite('img/harry_'+fileName, img)
             time.sleep(2)
+"""

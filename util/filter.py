@@ -14,6 +14,12 @@ def filterLine(line_content):
     line = [re.sub(r1, '', content) for content in line_content]
     return line
 
+def filterEngLine(line_content):
+    r1 = "[\sa-zA-Z．：“”（）\'\"《》\-:\.：·\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    import re
+    line = [re.sub(r1, '', content) for content in line_content]
+    return line
+
 def filterPersonState(state_content):
     import re
     if len(state_content) == 2 and bool(re.search(r'\d', state_content[0])):
