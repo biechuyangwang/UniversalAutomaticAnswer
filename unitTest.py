@@ -1,9 +1,19 @@
+# 处理哈利题库
+import csv
+with open('csvImp/哈利波特题库_12_15.csv','r', encoding='utf-8-sig') as csvfile:
+    reader = csv.reader(csvfile,delimiter=' ')
+    reader = list(reader)
+    for idx, row in enumerate(reader):
+        if len(row) != len(reader[0]):
+            print(row)
+	# raw_data = list(map(lambda row: (row[1], row[2]), reader))
+
 # 测试题目包含英语处理
-contentq = ['开始', '是谁创建了S.P.E.W.一', '家养小精灵权益促进会吗？', 'WhocreatedS.P.E.W.-SocietyforthePromotionofElfishWelfare?']
-r1 = "[\sa-zA-Z．：“”（）\?\'\"《》\-:\.：·\*\.\+\$\^\[\]\(\)\{\}\|]+"
-import re
-content_list_sub = [content for content in contentq if len(re.sub(r1, '', content))>0]
-print(content_list_sub)
+# contentq = ['开始', '是谁创建了S.P.E.W.一', '家养小精灵权益促进会吗？', 'WhocreatedS.P.E.W.-SocietyforthePromotionofElfishWelfare?']
+# r1 = "[\sa-zA-Z．：“”（）\?\'\"《》\-:\.：·\*\.\+\$\^\[\]\(\)\{\}\|]+"
+# import re
+# content_list_sub = [content for content in contentq if len(re.sub(r1, '', content))>0]
+# print(content_list_sub)
 # output
 # ['开始', '是谁创建了S.P.E.W.一', '家养小精灵权益促进会吗？']
 

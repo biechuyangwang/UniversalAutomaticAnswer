@@ -164,6 +164,7 @@ if __name__ == '__main__':
     if sel == '3':
         exit()
     while True:
+        # time.sleep(0.1)
         win_rect, img= screen.get_screenshot()
         # img = cv2.imread(screen.ravenclaw_imgpath)
 

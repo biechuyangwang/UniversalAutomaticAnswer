@@ -222,14 +222,14 @@ if __name__ == '__main__':
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
                 time.sleep(8)
-            else:
-                print('百度大法！')
-                searchimp = searchImp(conf_data)
-                ans_baidu = searchimp.baidu(question, options) # [(频次，内容，序号),()]
-                ans = ans_baidu[0][2]
-                # print('百度答案：',ans_baidu)
-                x,y = coordinate[ans][0], coordinate[ans][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
+            # else: # 别百度了，直接抄答案吧
+            #     print('百度大法！')
+            #     searchimp = searchImp(conf_data)
+            #     ans_baidu = searchimp.baidu(question, options) # [(频次，内容，序号),()]
+            #     ans = ans_baidu[0][2]
+            #     # print('百度答案：',ans_baidu)
+            #     x,y = coordinate[ans][0], coordinate[ans][1]
+            #     left_click(win_rect[0]+x,win_rect[1]+y,2)
             continue
         # else :
         #     time.sleep(0.5) # 题答完了，等待期间0.5秒轮询一次

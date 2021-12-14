@@ -1,7 +1,8 @@
 path:
   imgpath: "img/harrypotter_question.jpg" # 调试功能用
   ravenclaw_imgpath: "img/harrypotter_question_xueyuan.jpg" # 调试功能用
-  data_path: "csvImp/harrypotter_questions.csv" # 题库
+  # data_path: "csvImp/harrypotter_questions.csv" # 题库
+  data_path: "csvImp/哈利波特题库_12_15.csv" # 题库
 
 
 windowsScreen:
