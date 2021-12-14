@@ -106,9 +106,15 @@ def get_question_answer(img):
     contentd = ocr.ocr_content(resultd)
     print(contentq)
 
-    optiona,optionb,optionc,optiond = '', '', '', ''
-    question = filterQuestion(contentq)[0]
+    question, optiona,optionb,optionc,optiond = '', '', '', '' ,''
+    if len(filterLine(contentq))>0:
+        question = filterQuestion(contentq)[0]
     print(question)
+    if len(question)==0:
+        print('题目未识别！')
+        print('源数据为：',resultq)
+        return res
+
 
     if len(filterLine(contenta))>0:
         optiona = filterLine(contenta)[0]
@@ -194,7 +200,7 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 12:
             is_answered = 0
-            time.sleep(0.1)
+            time.sleep(0.1) #学院活动出题满了这一会，不然扫描不到题目
             win_rect, img= screen.get_screenshot()
             # img = cv2.imread(screen.ravenclaw_imgpath)
             res = get_question_answer(img)

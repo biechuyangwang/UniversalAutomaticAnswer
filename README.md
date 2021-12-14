@@ -125,7 +125,8 @@ python run.py
     - 实时的目标检测（拿和平精英或者pubg开刀吧）
     - 目标跟踪（这个是我的老本行，等我想做这个的时候在来搞个无人机自动跟踪，PS：我不是跟踪狂）
 ### 5.1 讨论群
-暂时没有，请issue或者邮箱1101049446@qq.com
+Q群：211477184
+欢迎请issue或者邮箱1101049446@qq.com
 ### 5.2 引用与非商业化
 @misc{UAA2021,
 title={UAA, Universal Automatic Answer.},

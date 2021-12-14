@@ -4,7 +4,8 @@
 def filterQuestion(question_content):
     r1 = "[\sa-zA-Z．：“”（）\'\"《》\-:\.：·\*\.\+\$\^\[\]\(\)\{\}\|]+"
     import re
-    content_list_sub = [re.sub(r1, '', content) for content in question_content]
+    # content_list_sub = [re.sub(r1, '', content) for content in question_content]
+    content_list_sub = [content for content in question_content if len(re.sub(r1, '', content))>0] # 只过滤纯英文行
     question = list(filter(lambda s:len(s) >= 6,content_list_sub))
     return question
 
