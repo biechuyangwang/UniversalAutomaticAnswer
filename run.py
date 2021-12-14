@@ -115,7 +115,6 @@ def get_question_answer(img):
         print('源数据为：',resultq)
         return res
 
-
     if len(filterLine(contenta))>0:
         optiona = filterLine(contenta)[0]
     if len(filterLine(contentb))>0:

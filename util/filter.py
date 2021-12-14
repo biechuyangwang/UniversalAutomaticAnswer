@@ -6,7 +6,7 @@ def filterQuestion(question_content):
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]
     content_list_sub = [content for content in question_content if len(re.sub(r1, '', content))>0] # 只过滤纯英文行
-    question = list(filter(lambda s:len(s) >= 6,content_list_sub))
+    question = list(filter(lambda s:len(s) >= 7,content_list_sub)) # 过滤人名
     return question
 
 def filterLine(line_content):

@@ -75,7 +75,7 @@ def left_click(x,y,times=1):
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
         times -= 1
-    win32api.SetCursorPos((1200,848)) # 每次答完题，鼠标先移到D选项位置
+    # win32api.SetCursorPos((1200,848)) # 每次答完题，鼠标先移到D选项位置
     # print('左键点击',x,y)
 
 def is_start(img, str_start):
@@ -107,9 +107,14 @@ def get_question_answer(img):
     contentd = ocr.ocr_content(resultd)
     print(contentq)
 
-    optiona,optionb,optionc,optiond = '', '', '', ''
-    question = filterQuestion(contentq)[0]
+    question, optiona,optionb,optionc,optiond = '', '', '', '' ,''
+    if len(filterLine(contentq))>0:
+        question = filterQuestion(contentq)[0]
     print(question)
+    if len(question)==0:
+        print('题目未识别！')
+        print('源数据为：',resultq)
+        return res
 
     if len(filterLine(contenta))>0:
         optiona = filterLine(contenta)[0]
@@ -226,8 +231,8 @@ if __name__ == '__main__':
                 x,y = coordinate[ans][0], coordinate[ans][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
             continue
-        else :
-            time.sleep(0.5) # 题答完了，等待期间0.5秒轮询一次
+        # else :
+        #     time.sleep(0.5) # 题答完了，等待期间0.5秒轮询一次
         if is_answered == 0 and countdown_num == 0:
             in_rect, img = screen.get_screenshot()
             import datetime
