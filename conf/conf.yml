@@ -2,7 +2,7 @@ path:
   imgpath: "img/harrypotter_question.jpg" # 调试功能用
   ravenclaw_imgpath: "img/harrypotter_question_xueyuan.jpg" # 调试功能用
   # data_path: "csvImp/harrypotter_questions.csv" # 题库
-  data_path: "csvImp/哈利波特题库_12_15.csv" # 题库
+  data_path: "csvImp/哈利波特题库_12_18.csv" # 题库
 
 
 windowsScreen:
@@ -15,17 +15,30 @@ imgRect: # 1600*900分辨率下的块坐标
   ravenclaw_rectStart: [1254,810,1465,864] # 学院活动开始按钮的坐标
   rectContinue: [1189,864,1323,918] # 魔法史继续按钮的坐标
   rectCountdown: [770,40,840,100] # 学院活动继续按钮的坐标
-  rectQ: [150,450,1000,660] # 问题块的坐标
-  rectA: [120,700,500,760] # 选项A的坐标
-  rectB: [900,700,1350,760] # 选项B的坐标
-  rectC: [120,820,500,870] # 选项C的坐标
-  rectD: [900,820,1350,870] # 选项D的坐标
-  rect_person1_state: [527, 367, 644, 481] # 魔法史抄答案坐标1
-  rect_person2_state: [968, 314, 1090, 428] # 魔法史抄答案坐标2
-  rect_person3_state: [1150, 293, 1275, 415] # 魔法史抄答案坐标3
-  ravenclaw_rect_person1_state: [395, 250, 555, 350] # 学院活动抄答案坐标1
-  ravenclaw_rect_person2_state: [660, 265, 820, 370] # 学院活动抄答案坐标2
-  ravenclaw_rect_person3_state: [940, 265, 1100, 370] # 学院活动抄答案坐标3
+  # rectQ: [150,450,1000,660] # 问题块的坐标
+  # rectA: [120,700,500,760] # 选项A的坐标
+  # rectB: [900,700,1350,760] # 选项B的坐标
+  # rectC: [120,820,500,870] # 选项C的坐标
+  # rectD: [900,820,1350,870] # 选项D的坐标
+  rectQ: [220,550,890,665] # 问题块的坐标
+  rectA: [227,740,600,790] # 选项A的坐标
+  rectB: [885,740,1260,790] # 选项B的坐标
+  rectC: [227,835,600,885] # 选项C的坐标
+  rectD: [885,835,1260,885] # 选项D的坐标
+  # rect_person1_state: [527, 367, 644, 481] # 魔法史抄答案坐标1
+  # rect_person2_state: [968, 314, 1090, 428] # 魔法史抄答案坐标2
+  # rect_person3_state: [1150, 293, 1275, 415] # 魔法史抄答案坐标3
+  rect_person1_state: [540,400,650,500] # 魔法史抄答案坐标1
+  rect_person2_state: [980,345,1090,445] # 魔法史抄答案坐标2
+  rect_person3_state: [1160,320,1260,420] # 魔法史抄答案坐标3
+
+  ravenclaw_rect_person1_state: [540, 400, 650, 500] # 学院活动抄答案坐标1
+  ravenclaw_rect_person2_state: [990, 350, 1090, 450] # 学院活动抄答案坐标2
+  ravenclaw_rect_person3_state: [1160, 315, 1260, 415] # 学院活动抄答案坐标3
+
+  # ravenclaw_rect_person1_state: [395, 250, 555, 350] # 学院活动抄答案坐标1
+  # ravenclaw_rect_person2_state: [660, 265, 820, 370] # 学院活动抄答案坐标2
+  # ravenclaw_rect_person3_state: [940, 265, 1100, 370] # 学院活动抄答案坐标3
 
 
 coordinate: # 这个可以通过块坐标计算，特殊业务逻辑时自定义

@@ -34,7 +34,7 @@ class DataMatcher(object): # 拼音匹配算法对的解决方案
 		scored = {}
 		for result in results:
 			scored[result[0]] = max(result[1], scored.get(result[0], 0))
-			if scored[result[0]] == 0:
+			if scored[result[0]] < 10:
 				scored.pop(result[0])
 		# print(scored)
 		results = sorted([(self.raw_data[dataset[sent]], score, dataset[sent]) for sent, score in scored.items()], key=lambda x: x[1], reverse=True)
@@ -47,8 +47,8 @@ def match_options(answer, options): # answer, options
     scored = {}
     for result in results:
         scored[result[0]] = max(result[1], scored.get(result[0], 0))
-        # if scored[result[0]] < 50:
-        #     scored.pop(result[0])
+        if scored[result[0]] < 10:
+            scored.pop(result[0])
     # print(scored)
     results = sorted([(options[dataset[sent]], score, dataset[sent]) for sent, score in scored.items()], key=lambda x: x[1], reverse=True)
     return results # [(sent, score, idx)]

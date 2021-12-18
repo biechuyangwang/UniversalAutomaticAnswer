@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def filterQuestion(question_content):
-    r1 = "[\sa-zA-Z．·“”（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\sa-zA-Z．·“”』（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
     r2 = "[\s．·“”（）\'\"《》\-:：\*\+\$\^\[\]\(\)\{\}\|]+"
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]

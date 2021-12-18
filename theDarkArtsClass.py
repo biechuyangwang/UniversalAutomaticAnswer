@@ -216,9 +216,7 @@ if __name__ == '__main__':
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
-                time.sleep(3)
-                win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
-                cv2.imwrite('./img/harry_test_1218.png',img)
+                time.sleep(2)
             else:
                 print('抄答案吧！')
             continue
@@ -262,7 +260,7 @@ if __name__ == '__main__':
             # 错题就先不计了
             time.sleep(0.9)
             continue
-        elif (is_answered == 0 and countdown_num == 1):
+        elif (is_answered == 0 and countdown_num == 0):
             print('这题盲猜C')
             x,y = coordinate[2][0], coordinate[2][1]
             left_click(win_rect[0]+x,win_rect[1]+y,2)
