@@ -28,9 +28,9 @@ def left_click(x,y,times=4):
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP,x,y,0,0)
         times -= 1
-walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
-card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
-# charms_coordinate = [[200,770,300,855],[630,700,676,777],[765,690,818,778],[910,700,960,775],[1060,700,1108,786],[556, 878,637, 922]] # states: steps 1 2 3 4 HP
+# walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
+# card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
+charms_coordinate = [[200,770,300,855],[630,700,676,777],[765,690,818,778],[910,700,960,775],[1060,700,1108,786],[556, 878,637, 922]] # states: steps 1 2 3 4 HP
 # copy_coordinate = [[540,400,650,500],[980,345,1090,445],[1160,320,1260,420]]
 
 win_rect, img= screen.get_screenshot()
@@ -43,8 +43,8 @@ win_rect, img= screen.get_screenshot()
 # img3 = img[700:775,910:960]
 # img4 = img[700:786,1060:1108]
 # img5 = img[878:932,556:637] # 蓝条
-# walk_coordinate = [[850,716],[846,712],[854,720]]
-# card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1122,830]] # ~ 1 2 3 4
+walk_coordinate = [[1360,650],[850,712],[340,680]]
+card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1122,830]] # ~ 1 2 3 4
 import matplotlib.pyplot as plt
 
 # result = ocr.ocr(img, det=True, cls=True)
@@ -64,7 +64,6 @@ def is_start(img, str_start):
         left_click(win_rect[0]+x,win_rect[1]+y,2)
         return True
     return False
-
 count_steps = 0
 while True:
     import time
@@ -91,23 +90,20 @@ while True:
     if len(content_continue)>0 and content_continue[0] == '点击继续':
         x, y = 1200, 890
         left_click(win_rect[0]+x,win_rect[1]+y,2)
-        time.sleep(1)
         continue
     
     img_steps, img_1, img_2, img_3, img_4, img_5 = '-1', '15', '15', '15', '15', '11'
-    img_steps = img[800:850, 200:265]
-    img_1 = img[710:777, 615:665] # 1
-    img_2 = img[710:777, 770:820] # 2
-    img_3 = img[710:777, 920:970] # 3
-    img_4 = img[720:787, 1060:1110] # 4
-    img_nextcard = img[768:816, 1205:1246,::-1] # 下一张卡
+    img_steps = img[770:855,200:300]
+    img_1 = img[700:800,600:700]
+    img_2 = img[690:778,765:818] # 点击 850 716
+    img_3 = img[700:775,910:960]
+    img_4 = img[700:786,1060:1108]
     img_5 = img[878:932,556:637] # 蓝条
     result_steps = ocr.ocr(img_steps)
     result_1 = ocr.ocr(img_1)
     result_2 = ocr.ocr(img_2)
     result_3 = ocr.ocr(img_3)
     result_4 = ocr.ocr(img_4)
-    result_nextcard = ocr.ocr(img_nextcard)
     result_5 = ocr.ocr(img_5)
     result_steps = ocr.ocr_content(result_steps)
     result_steps = filterLine(result_steps)
@@ -146,20 +142,24 @@ while True:
     else:
         result_5 = -1
     fee = [result_1,result_2,result_3,result_4]
-    idx = fee.index(min(fee))
+    # idx = fee.index(min(fee))
     import random
     # idx = random.randint(0, 3)
     # if fee[idx]>7:
     #     continue
     walk_idx = random.randint(0, 2)
+    idx = random.randint(0, 3)
     x_walk, y_walk = walk_coordinate[walk_idx][0], walk_coordinate[walk_idx][1]
     x_0, y_0 = card_coordinate[0][0], card_coordinate[0][1] # 伙伴卡
     x, y = card_coordinate[idx+1][0], card_coordinate[idx+1][1]
-    if result_5 == -1 or result_5 > 5:
+    print('***********剩余费用：',result_5)
+    if result_5 == -1 or result_5 == 1 or result_5 > 5:
         if count_steps % 3 == 0:
             left_click(win_rect[0]+x_walk,win_rect[1]+y_walk,4) # 走一步
             left_click(win_rect[0]+x_0,win_rect[1]+y_0,4) # 点击伙伴卡
         count_steps += 1
+        # left_click(win_rect[0]+x_walk,win_rect[1]+y_walk,4) # 走一步
+        # left_click(win_rect[0]+x_0,win_rect[1]+y_0,4) # 点击伙伴卡
         left_click(win_rect[0]+x,win_rect[1]+y,4) # 点击目标卡
         print('所剩步数：',result_steps)
         print('卡1费用：',result_1)

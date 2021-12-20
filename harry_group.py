@@ -69,7 +69,7 @@ def write_new_question(info, answer_flag=""):
     # 新题目按时间新建文件，追加的方式保留当天的新题
     df.to_csv('./new_questions/'+time_str+'_harry_questions.csv', mode='a', header=False)
 
-def left_click(x,y,times=1):
+def left_click(x,y,times=2):
     win32api.SetCursorPos((x,y))
     while times:
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,x,y,0,0)
@@ -92,7 +92,7 @@ def is_start(img, str_start):
 
 def get_question_answer(img):
     # 一次答题流程
-    # res = []
+    res = []
     QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
     resultq = ocr.ocr(QBtn)
     resulta = ocr.ocr(ABtn)
@@ -126,7 +126,20 @@ def get_question_answer(img):
         optiond = filterLine(contentd)[0]
     options = [optiona, optionb, optionc, optiond]
     print('ocr结果:', [question,options])
-    return question, options
+
+    answer_list = list(data_matcher.get_close_match(question))
+    if len(answer_list) == 0 or list(answer_list[0])[1] < 40:
+        print('没有匹配到题库')
+        return res
+    else:
+        print('题库匹配结果:', answer_list[0])
+        answer = answer_list[0][0][1]
+        res = match_options(answer, options)
+        if len(res) == 0:
+            print('选项OCR出错')
+            return res
+        print('选项匹配结果:', res)
+        return res
 
 def get_match_result(question, options):
     res = []
@@ -149,10 +162,10 @@ def get_match_result(question, options):
 #     [1200,848]
 # ]
 coordinate = [
-    [555,797],
-    [1222,797],
-    [555,888],
-    [1222,888]
+    [646,797],
+    [1300,797],
+    [646,888],
+    [1300,888]
 ]
 if __name__ == '__main__':
     is_answered = 1
@@ -188,7 +201,7 @@ if __name__ == '__main__':
             countdown_num = int(content_countdown[0])
         else: # 没识别到计时器，就识别开始和继续按钮
             # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
-            time.sleep(0.2)
+            # time.sleep(0.2)
             if sel == '1': # 魔法史
                 flag = is_start(img, '匹配上课')
                 if(flag): # 识别到了就跳过，重新截图
@@ -213,21 +226,24 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 20:
             if sel == '3': # 社团答题才有抢答
-                x,y = coordinate[3][0], coordinate[3][1]  # 进去，先盲猜D，D没人选，大概率能首抢
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
+                x,y = coordinate[2][0], coordinate[2][1]  # 进去，先盲猜C，C没人选，大概率能首抢
+                left_click(win_rect[0]+x,win_rect[1]+y,4)
                 # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
             is_answered = 0
-            time.sleep(0.1)
+            time.sleep(0.2)
             win_rect, img= screen.get_screenshot()
             # img = cv2.imread(screen.ravenclaw_imgpath)
-            question, options = get_question_answer(img)
-            res = get_match_result(question, options)
+            # question, options = get_question_answer(img)
+            # res = get_match_result(question, options)
+            res = get_question_answer(img)
             if len(res) >0:
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
-                left_click(win_rect[0]+x,win_rect[1]+y,2)
+                left_click(win_rect[0]+x,win_rect[1]+y,4)
                 is_answered = 1
                 time.sleep(8)
+            else:
+                print('没有匹配到答案,请手动答题')
             # else: # 别百度了，直接抄答案吧
             #     print('百度大法！')
             #     searchimp = searchImp(conf_data)
@@ -239,7 +255,7 @@ if __name__ == '__main__':
             continue
         # else :
         #     time.sleep(0.5) # 题答完了，等待期间0.5秒轮询一次
-        if is_answered == 0 and countdown_num == 0:
+        if is_answered == 0 and countdown_num == 2:
             in_rect, img = screen.get_screenshot()
             import datetime
             fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'_group.png'
