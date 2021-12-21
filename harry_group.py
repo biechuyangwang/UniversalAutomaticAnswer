@@ -232,9 +232,6 @@ if __name__ == '__main__':
             is_answered = 0
             time.sleep(0.2)
             win_rect, img= screen.get_screenshot()
-            # img = cv2.imread(screen.ravenclaw_imgpath)
-            # question, options = get_question_answer(img)
-            # res = get_match_result(question, options)
             res = get_question_answer(img)
             if len(res) >0:
                 print('这题选',chr(ord('A')+int(res[0][2])))

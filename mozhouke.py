@@ -78,8 +78,9 @@ while True:
 
     # 识别匹配上课
     flag1 = is_start(img, '匹配上课')
-    flag2 = is_start(img, '学院活动匹配')
-    if flag1 or flag2: # 识别到了就跳过，重新截图
+    flag2 = is_start(img, '上课')
+    flag3 = is_start(img, '学院活动匹配')
+    if flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
         continue
     
     # 识别继续按钮
@@ -153,7 +154,7 @@ while True:
     x_0, y_0 = card_coordinate[0][0], card_coordinate[0][1] # 伙伴卡
     x, y = card_coordinate[idx+1][0], card_coordinate[idx+1][1]
     print('***********剩余费用：',result_5)
-    if result_5 == -1 or result_5 == 1 or result_5 > 5:
+    if result_5 == -1 or result_5 == 1 or result_5 > 7:
         if count_steps % 3 == 0:
             left_click(win_rect[0]+x_walk,win_rect[1]+y_walk,4) # 走一步
             left_click(win_rect[0]+x_0,win_rect[1]+y_0,4) # 点击伙伴卡

@@ -216,7 +216,7 @@ if __name__ == '__main__':
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
-                time.sleep(3)
+                time.sleep(8)
                 win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
                 cv2.imwrite('./img/harry_test_1218.png',img)
             else:

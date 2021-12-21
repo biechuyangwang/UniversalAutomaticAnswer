@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 def filterQuestion(question_content):
-    r1 = "[\sa-zA-Z．·“”』（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
-    r2 = "[\s．·“”（）\'\"《》\-:：\*\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\sa-zA-Z．·“”』。！（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    r2 = "[\s．·“”。！（）』\'\"《》\-:：\*\+\$\^\[\]\(\)\{\}\|]+"
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]
     content_list_sub = [re.sub(r2, '', content) for content in question_content if len(re.sub(r1, '', content))>0] # 只过滤纯英文行
