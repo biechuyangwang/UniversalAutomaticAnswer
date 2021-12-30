@@ -1,4 +1,5 @@
 # 分析黑魔法防御课界面 
+# """
 import cv2
 import sys
 sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
@@ -60,11 +61,19 @@ def is_start(img, str_start):
     content_start = filterLine(content_start)
     if len(content_start)>0 and content_start[0] == str_start:
         time.sleep(5)
+        global epoch_num
+        epoch_num -= 1
+        if epoch_num == -1:
+            exit()
         x, y = 1300, 840
         left_click(win_rect[0]+x,win_rect[1]+y,2)
         return True
     return False
 count_steps = 0
+epoch_num = 3
+epoch = input('请输入轮数:')
+if(epoch!=''):
+    epoch_num = int(epoch)
 while True:
     import time
     time.sleep(2)

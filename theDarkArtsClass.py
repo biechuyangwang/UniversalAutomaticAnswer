@@ -66,7 +66,11 @@ def is_start(img, str_start):
     return False
 
 count_steps = 0
+epoch_num = 3
 while True:
+    if epoch_num == 0:
+        break
+
     import time
     time.sleep(2)
     win_rect, img= screen.get_screenshot() 
@@ -81,6 +85,7 @@ while True:
     flag1 = is_start(img, '匹配上课')
     flag2 = is_start(img, '学院活动匹配')
     if flag1 or flag2: # 识别到了就跳过，重新截图
+        epoch_num -= 1
         continue
     
     # 识别继续按钮

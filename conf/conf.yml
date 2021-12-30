@@ -8,7 +8,8 @@ path:
 windowsScreen:
   resolution: [1600,900] # 分辨率，暂不支持修改
   screen_hwnd: "android9" # 要截屏的句柄的名字，可以使用script包中的getWindowsHwnd.py来获取
-  # screen_hwnd: "哈利波特:魔法觉醒 - MuMu模拟器"
+  # screen_hwnd: "网易云游戏-哈利波特：魔法觉醒-菜单键：Esc"
+  # screen_hwnd: "网易云游戏"
 
 imgRect: # 1600*900分辨率下的块坐标
   rectStart: [1269,810,1437,864] # 魔法史开始按钮的坐标
@@ -28,13 +29,13 @@ imgRect: # 1600*900分辨率下的块坐标
   # rect_person1_state: [527, 367, 644, 481] # 魔法史抄答案坐标1
   # rect_person2_state: [968, 314, 1090, 428] # 魔法史抄答案坐标2
   # rect_person3_state: [1150, 293, 1275, 415] # 魔法史抄答案坐标3
-  rect_person1_state: [540,400,650,500] # 魔法史抄答案坐标1
-  rect_person2_state: [980,345,1090,445] # 魔法史抄答案坐标2
-  rect_person3_state: [1160,320,1260,420] # 魔法史抄答案坐标3
+  rect_person1_state: [540,390,650,490] # 魔法史抄答案坐标1 [390:490,540:640]
+  rect_person2_state: [990,350,1090,450] # 魔法史抄答案坐标2 [350:450,990:1090]
+  rect_person3_state: [1165,330,1265,430] # 魔法史抄答案坐标3 img[330:430,1165:1265]
 
-  ravenclaw_rect_person1_state: [540, 400, 650, 500] # 学院活动抄答案坐标1
-  ravenclaw_rect_person2_state: [990, 350, 1090, 450] # 学院活动抄答案坐标2
-  ravenclaw_rect_person3_state: [1160, 315, 1260, 415] # 学院活动抄答案坐标3
+  ravenclaw_rect_person1_state: [540,390,650,490] # 学院活动抄答案坐标1
+  ravenclaw_rect_person2_state: [990,350,1090,450] # 学院活动抄答案坐标2
+  ravenclaw_rect_person3_state: [1165,330,1265,430] # 学院活动抄答案坐标3
 
   # ravenclaw_rect_person1_state: [395, 250, 555, 350] # 学院活动抄答案坐标1
   # ravenclaw_rect_person2_state: [660, 265, 820, 370] # 学院活动抄答案坐标2

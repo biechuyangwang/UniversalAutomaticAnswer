@@ -226,7 +226,7 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 20:
             if sel == '3': # 社团答题才有抢答
-                x,y = coordinate[2][0], coordinate[2][1]  # 进去，先盲猜C，C没人选，大概率能首抢
+                x,y = coordinate[1][0], coordinate[1][1]  # 进去，先盲猜B，B没人选，大概率能首抢
                 left_click(win_rect[0]+x,win_rect[1]+y,4)
                 # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
             is_answered = 0

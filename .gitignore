@@ -1,7 +1,6 @@
 /.git/
 **/__pycache__
 **/*.pyc
-**/*.csv
 **/*.log
 **/*.json
 **/*.png
