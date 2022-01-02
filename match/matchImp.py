@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # fuzz match
+import re
 import time
 import csv
 from thefuzz import process, fuzz
@@ -47,10 +48,19 @@ def match_options(answer, options): # answer, options
     scored = {}
     for result in results:
         scored[result[0]] = max(result[1], scored.get(result[0], 0))
-        if scored[result[0]] < 10:
-            scored.pop(result[0])
+        # if scored[result[0]] < 10: # 不用过滤，一共就只有4个选项
+        #     scored.pop(result[0])
     # print(scored)
     results = sorted([(options[dataset[sent]], score, dataset[sent]) for sent, score in scored.items()], key=lambda x: x[1], reverse=True)
+    if results[0][1] < 80: 
+        cur = [result for result in results if result[0] == ''] # 正好答案没识别出来的情况，打个补丁
+        cur_other = [result for result in results if result[0] != ''] # 正好答案没识别出来的情况，打个补丁
+        if len(cur_other) == 3 : # 避免去重影响判断且避免相近描述错选
+            return [(cur[0][0], 100, cur[0][2])]
+        elif results[0][1] == 0:
+            return []
+        else:
+            return results
     return results # [(sent, score, idx)]
 
 
@@ -58,8 +68,8 @@ if __name__ == '__main__':
     conf_path = 'conf/conf.yml'
     conf_data = get_yaml_file(conf_path)
     data_matcher = DataMatcher(conf_data)
-    info = '伸缩眼酸味爆爆糖'
-    options = ['伸缩眼', '糖', '发烧糖', '拼写检查羽毛笔']
+    info = '17'
+    options = ['16', '29', '', '42']
 
     answer_list = list(data_matcher.get_close_match(info))
     answer = answer_list[0][0][1]

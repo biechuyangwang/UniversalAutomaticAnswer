@@ -1,48 +1,50 @@
 # 通用截屏
-import numpy as np
-import win32gui
-import win32ui
-import win32con
-import matplotlib.pyplot as plt
-from PIL import Image
+# import numpy as np
+# import win32gui
+# import win32ui
+# import win32con
+# import matplotlib.pyplot as plt
+# from PIL import Image
 
-def get_windows_screen():
-    hwnd = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
-    # hwnd = 24928
-    win_rect = win32gui.GetWindowRect(hwnd)
-    print(win_rect)
-    wDC = win32gui.GetWindowDC(hwnd)
-    dcObj = win32ui.CreateDCFromHandle(wDC)
-    cDC = dcObj.CreateCompatibleDC()
-    dataBitMap = win32ui.CreateBitmap()
-    width = win_rect[2] - win_rect[0]
-    height = win_rect[3] - win_rect[1]
-    dataBitMap.CreateCompatibleBitmap(dcObj, width, height)
-    cDC.SelectObject(dataBitMap)
-    cDC.BitBlt((0,0), (width, height), dcObj, (win_rect[0], win_rect[0]), win32con.SRCCOPY)
+# def get_windows_screen():
+#     hwnd = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
+#     # hwnd = 24928
+#     win_rect = win32gui.GetWindowRect(hwnd)
+#     print(win_rect)
+#     wDC = win32gui.GetWindowDC(hwnd)
+#     dcObj = win32ui.CreateDCFromHandle(wDC)
+#     cDC = dcObj.CreateCompatibleDC()
+#     dataBitMap = win32ui.CreateBitmap()
+#     width = win_rect[2] - win_rect[0]
+#     height = win_rect[3] - win_rect[1]
+#     dataBitMap.CreateCompatibleBitmap(dcObj, width, height)
+#     cDC.SelectObject(dataBitMap)
+#     cDC.BitBlt((0,0), (width, height), dcObj, (win_rect[0], win_rect[0]), win32con.SRCCOPY)
 
-    dataBitMap.SaveBitmapFile(cDC,'test.bmp')
+#     dataBitMap.SaveBitmapFile(cDC,'test.bmp')
 
-    bmInfo = dataBitMap.GetInfo()
-    bmpstr = dataBitMap.GetBitmapBits(True)
+#     bmInfo = dataBitMap.GetInfo()
+#     bmpstr = dataBitMap.GetBitmapBits(True)
 
-    # im = np.frombuffer(dataBitMap.GetBitmapBits(True), dtype = np.uint8)
-    im = Image.frombuffer("RGB", (bmInfo["bmWidth"], bmInfo["bmHeight"]), bmpstr, "raw", "BGRX", 0, 1)
+#     # im = np.frombuffer(dataBitMap.GetBitmapBits(True), dtype = np.uint8)
+#     im = Image.frombuffer("RGB", (bmInfo["bmWidth"], bmInfo["bmHeight"]), bmpstr, "raw", "BGRX", 0, 1)
 
-    dcObj.DeleteDC()
-    cDC.DeleteDC()
-    win32gui.ReleaseDC(hwnd, wDC)
-    win32gui.DeleteObject(dataBitMap.GetHandle())
+#     dcObj.DeleteDC()
+#     cDC.DeleteDC()
+#     win32gui.ReleaseDC(hwnd, wDC)
+#     win32gui.DeleteObject(dataBitMap.GetHandle())
 
-    # return im.reshape(bmInfo['bmHeight'], bmInfo['bmWidth'], 4)[:,:,:]
-    return im
+#     # return im.reshape(bmInfo['bmHeight'], bmInfo['bmWidth'], 4)[:,:,:]
+#     return im
 
-im = get_windows_screen()
-# print(im.shape)
-plt.imshow(im)
-plt.show()
+# im = get_windows_screen()
+# # print(im.shape)
+# plt.imshow(im)
+# plt.show()
+
+
 # 分析黑魔法防御课界面 
-"""
+# """
 
 
 import cv2
@@ -74,25 +76,26 @@ walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
 card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
 copy_coordinate = [[540,400,650,500],[980,345,1090,445],[1160,320,1260,420]]
 # img_path = './img/harry_test_state.png'
-# img_path = './img/harry_2021_12_26_01_05_17.png'
-# img = cv2.imread(img_path)
+img_path = './img/harry_2022_01_01_05_36_02.png'
+img = cv2.imread(img_path)
 import matplotlib.pyplot as plt
 # img = img[720:920,131:1460,::-1] # 131 720 1460 920
-# option1 = img[720:820,131:520,::-1]
-# option2 = img[720:820,831:1260,::-1]
-# option3 = img[820:920,131:520,::-1]
-# option4 = img[820:920,831:1260,::-1]
-# img1 = img[400:500,540:650,::-1]
+# img = img[:,:,::-1]
+option1 = img[720:820,131:520,::-1]
+option2 = img[720:820,831:1260,::-1]
+option3 = img[820:920,131:520,::-1]
+option4 = img[820:920,831:1260,::-1]
+# img1 = img[385:495,530:640,::-1]
 # img2 = img[345:445,980:1090]
-# img3 = img[320:420,1160:1260]
-# status1 = img[390:490,540:640] # [[[568.0, 397.0], [625.0, 397.0], [625.0, 421.0], [568.0, 421.0]], ('/+15', 0.86291903)]
-# status2 = img[350:450,990:1090] # [[[999.0, 355.0], [1079.0, 355.0], [1079.0, 381.0], [999.0, 381.0]], ('V+15', 0.87752867)]
-# status3 = img[330:430,1165:1265] # [[[1177.0, 333.0], [1259.0, 333.0], [1259.0, 359.0], [1177.0, 359.0]], ('<+20', 0.8773143)]
-result = ocr.ocr(img, det=True, cls=True)
+# img3 = img[310:420,1155:1265]
+status1 = img[385:495,530:640] # [[[568.0, 397.0], [625.0, 397.0], [625.0, 421.0], [568.0, 421.0]], ('/+15', 0.86291903)]
+status2 = img[345:445,980:1090] # [[[999.0, 355.0], [1079.0, 355.0], [1079.0, 381.0], [999.0, 381.0]], ('V+15', 0.87752867)]
+status3 = img[310:420,1155:1265] # [[[1177.0, 333.0], [1259.0, 333.0], [1259.0, 359.0], [1177.0, 359.0]], ('<+20', 0.8773143)]
+result = ocr.ocr(status3, det=True, cls=True)
 print(result)
-plt.imshow(img)
+plt.imshow(status3)
 plt.show()
-"""
+# """
 """
 while True:
     import time

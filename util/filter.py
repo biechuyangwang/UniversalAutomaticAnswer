@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 
 def filterQuestion(question_content):
-    r1 = "[\sa-zA-Z．·“”』。！（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
-    r2 = "[\s．·“”。！（）』\'\"《》\-:：\*\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\sa-zA-Z．·“”』。，,！？\?（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    r2 = "[\s．·“”。！？\?（）』\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]
     content_list_sub = [re.sub(r2, '', content) for content in question_content if len(re.sub(r1, '', content))>0] # 只过滤纯英文行
-    question = list(filter(lambda s:len(s) >= 7,content_list_sub)) # 过滤人名
-    return question
+    # question = list(filter(lambda s:len(s) >= 6,content_list_sub)) # 过滤人名 有人名也不怕了
+    if len(content_list_sub) >= 2: # 过滤后拼接，修复因断句导致的错误
+        return [''.join(x for x in content_list_sub)]
+    return content_list_sub
 
 def filterLine(line_content):
-    r1 = "[\s．“”（）\'\"《》\-:\.：·\*\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\s．“”（）\'\"《》，\-:\.：·\*\+\$\^\[\]\(\)\{\}\|]+"
     import re
     line = [re.sub(r1, '', content) for content in line_content]
     return line
@@ -30,7 +32,7 @@ def filterPersonState(state_content):
         return None
 
 if __name__ == '__main__':
-    question_content = ['封香菜', 'a.b.c.谁的挂坠成了伏地魔的魂器？', 'WhoselocketbecameaHorcruxforVoldemorta']
+    question_content = ['封香菜', 'a.b.c.谁的挂坠成了伏地魔的魂器？', 'WhoselocketbecameaHorcruxforVoldemorta','测试追加内容']
     optiona_content = ['贝拉特里克斯·a.b.c.莱斯特兰奇']
     optionb_content = ['雷古勒斯·布莱克']
     optionc_content = ['萨拉查·斯莱特林']

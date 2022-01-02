@@ -153,6 +153,7 @@ coordinate_mul = [
     [366,810],
     [753,810]
 ]
+padd = -20
 
 if __name__ == '__main__':
     is_answered = 1
@@ -181,7 +182,7 @@ if __name__ == '__main__':
         win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
     if sel == '5':
         import win32gui
-        hwnd_mul_edge = win32gui.FindWindow(None, "网易云游戏平台 - 个人 - Microsoft​ Edge")
+        hwnd_mul_edge = win32gui.FindWindow(None, "网易大神 云游戏 - Google Chrome")
         win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
     # 网易云游戏平台 - 个人 - Microsoft​ Edge
     epoch = input('进行几次？默认3次\n')
@@ -220,7 +221,7 @@ if __name__ == '__main__':
                         left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,1)
                     if sel == '5':
                         x, y = 800,800
-                        left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,1)
+                        left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,1)
                     continue
             elif sel == '2': # 学院活动
                 flag = is_start(img, '学院活动匹配')
@@ -242,7 +243,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x, y = 747,830
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 continue
         # cv2.imwrite('./img/harry_state_1216.png',img)
         if countdown_num == 12:
@@ -265,11 +266,11 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 is_answered = 1
-                time.sleep(8)
-                win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
-                cv2.imwrite('./img/harry_test_1218.png',img)
+                time.sleep(4)
+                # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
+                # cv2.imwrite('./img/harry_test_1218.png',img)
             else:
                 print('抄答案吧！')
             continue
@@ -296,7 +297,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x, y = coordinate_mul[0][0], coordinate_mul[0][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 is_answered = 1
             elif state1 == 'B' or state2 == 'B' or state3 == 'B':
                 print('这题抄B')
@@ -307,7 +308,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x, y = coordinate_mul[1][0], coordinate_mul[1][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 is_answered = 1
             elif state1 == 'C' or state2 == 'C' or state3 == 'C':
                 print('这题抄C')
@@ -318,7 +319,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 is_answered = 1
             elif state1 == 'D' or state2 == 'D' or state3 == 'D':
                 print('这题抄D')
@@ -329,7 +330,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
                 if sel == '5':
                     x, y = coordinate_mul[3][0], coordinate_mul[3][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
                 is_answered = 1
             else:
                 pass
@@ -337,7 +338,7 @@ if __name__ == '__main__':
             # 错题就先不计了
             time.sleep(0.9)
             continue
-        elif (is_answered == 0 and countdown_num == 1):
+        elif (is_answered == 0 and countdown_num == 3):
             print('这题盲猜C')
             x,y = coordinate[2][0], coordinate[2][1]
             left_click(win_rect[0]+x,win_rect[1]+y,2)
@@ -346,7 +347,7 @@ if __name__ == '__main__':
                 left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
             if sel == '5':
                 x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y,4)
+                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd,4)
             is_answered = 2 # 表示没得抄，盲猜
         if is_answered == 2 and countdown_num == 0:
             in_rect, img = screen.get_screenshot()
