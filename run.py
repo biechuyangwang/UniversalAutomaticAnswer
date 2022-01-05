@@ -82,7 +82,7 @@ def is_start(img, str_start):
     result_start = ocr.ocr(img_start)
     content_start = ocr.ocr_content(result_start)
     content_start = filterLine(content_start)
-    if len(content_start)>0 and content_start[0] == str_start:
+    if len(content_start)>0 and str_start in content_start[0]:
         time.sleep(5)
         x, y = 1300, 840
         left_click(win_rect[0]+x,win_rect[1]+y,2)
@@ -194,12 +194,18 @@ if __name__ == '__main__':
             countdown_num = int(content_countdown[0])
         else: # 没识别到计时器，就识别开始和继续按钮
             if sel == '1': # 魔法史
-                flag = is_start(img, '匹配上课')
-                if(flag): # 识别到了就跳过，重新截图
+                flag1 = is_start(img, '匹配上课')
+                flag2 = is_start(img, '准备')
+                flag3 = is_start(img, '上课')
+                if flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
+                    time.sleep(1)
                     continue
             elif sel == '2': # 学院活动
-                flag = is_start(img, '学院活动匹配')
-                if(flag): # 识别到了就跳过，重新截图
+                flag1 = is_start(img, '学院活动匹配')
+                flag2 = is_start(img, '准备')
+                flag3 = is_start(img, '上课')
+                if flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
+                    time.sleep(1)
                     continue
             # 识别继续按钮
             img_continue = screen.get_continueBtn(img)
@@ -230,12 +236,13 @@ if __name__ == '__main__':
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
-                time.sleep(3.5)
+                time.sleep(8)
                 # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
                 # import datetime
                 # fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
                 # cv2.imwrite('img/harry_'+fileName,img) # 测试状态图（抄答案坐标）
             else:
+                time.sleep(1)
                 print('抄答案吧！')
             continue
         if (is_answered == 0 and countdown_num > 3):
@@ -272,8 +279,8 @@ if __name__ == '__main__':
                 x,y = coordinate[3][0], coordinate[3][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
-            else:
-                pass
+            # else:
+            #     pass
                 # print('答案都没得抄！')
             # 错题就先不计了
             time.sleep(0.9)

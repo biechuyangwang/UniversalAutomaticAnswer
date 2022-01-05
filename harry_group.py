@@ -83,7 +83,7 @@ def is_start(img, str_start):
     result_start = ocr.ocr(img_start)
     content_start = ocr.ocr_content(result_start)
     content_start = filterLine(content_start)
-    if len(content_start)>0 and content_start[0] == str_start:
+    if len(content_start)>0 and str_start in content_start[0]:
         time.sleep(5)
         x, y = 1300, 840
         left_click(win_rect[0]+x,win_rect[1]+y,2)
@@ -141,26 +141,7 @@ def get_question_answer(img):
         print('选项匹配结果:', res)
         return res
 
-def get_match_result(question, options):
-    res = []
-    answer_list = list(data_matcher.get_close_match(question))
-    if len(answer_list) == 0 or list(answer_list[0])[1] < 40:
-        print('没有匹配到题库')
-        return res
-    else:
-        print('题库匹配结果:', answer_list[0])
-        answer = answer_list[0][0][1]
-        res = match_options(answer, options)
-        print('选项匹配结果:', res)
-        return res
 
-
-# coordinate = [
-#     [500,734],
-#     [1200,734],
-#     [500,846],
-#     [1200,848]
-# ]
 coordinate = [
     [646,797],
     [1300,797],
@@ -226,11 +207,11 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 20:
             if sel == '3': # 社团答题才有抢答
-                x,y = coordinate[1][0], coordinate[1][1]  # 进去，先盲猜B，B没人选，大概率能首抢
+                x,y = coordinate[0][0], coordinate[0][1]  # 进去，先盲猜B，B没人选，大概率能首抢
                 left_click(win_rect[0]+x,win_rect[1]+y,4)
                 # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
             is_answered = 0
-            time.sleep(0.2)
+            time.sleep(0.1)
             win_rect, img= screen.get_screenshot()
             res = get_question_answer(img)
             if len(res) >0:

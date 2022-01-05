@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def filterQuestion(question_content):
-    r1 = "[\sa-zA-Z．·“”』。，,！？\?（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\sa-zA-Z0-9．·“”』。，,！？\?（）\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
     r2 = "[\s．·“”。！？\?（）』\'\"《》\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]
@@ -32,7 +32,7 @@ def filterPersonState(state_content):
         return None
 
 if __name__ == '__main__':
-    question_content = ['封香菜', 'a.b.c.谁的挂坠成了伏地魔的魂器？', 'WhoselocketbecameaHorcruxforVoldemorta','测试追加内容']
+    question_content = ['封香菜', 'a.b.c.谁的挂坠成了伏地魔的魂器？', 'WhoselocketbecameaHorcruxforVoldemorta123','测试追加内容']
     optiona_content = ['贝拉特里克斯·a.b.c.莱斯特兰奇']
     optionb_content = ['雷古勒斯·布莱克']
     optionc_content = ['萨拉查·斯莱特林']

@@ -76,11 +76,12 @@ walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
 card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
 copy_coordinate = [[540,400,650,500],[980,345,1090,445],[1160,320,1260,420]]
 # img_path = './img/harry_test_state.png'
-img_path = './img/harry_2022_01_01_05_36_02.png'
-img = cv2.imread(img_path)
+# img_path = './img/harrypotter_start_xueyuan.png'
+# img = cv2.imread(img_path)
 import matplotlib.pyplot as plt
 # img = img[720:920,131:1460,::-1] # 131 720 1460 920
-# img = img[:,:,::-1]
+img = img[:,:,::-1]
+start_button = img[829:900,1200:1500] # [1200,820,1500,900]
 option1 = img[720:820,131:520,::-1]
 option2 = img[720:820,831:1260,::-1]
 option3 = img[820:920,131:520,::-1]
@@ -91,9 +92,9 @@ option4 = img[820:920,831:1260,::-1]
 status1 = img[385:495,530:640] # [[[568.0, 397.0], [625.0, 397.0], [625.0, 421.0], [568.0, 421.0]], ('/+15', 0.86291903)]
 status2 = img[345:445,980:1090] # [[[999.0, 355.0], [1079.0, 355.0], [1079.0, 381.0], [999.0, 381.0]], ('V+15', 0.87752867)]
 status3 = img[310:420,1155:1265] # [[[1177.0, 333.0], [1259.0, 333.0], [1259.0, 359.0], [1177.0, 359.0]], ('<+20', 0.8773143)]
-result = ocr.ocr(status3, det=True, cls=True)
+result = ocr.ocr(start_button, det=True, cls=True)
 print(result)
-plt.imshow(status3)
+plt.imshow(start_button)
 plt.show()
 # """
 """

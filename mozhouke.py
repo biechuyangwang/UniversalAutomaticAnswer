@@ -59,7 +59,7 @@ def is_start(img, str_start):
     result_start = ocr.ocr(img_start)
     content_start = ocr.ocr_content(result_start)
     content_start = filterLine(content_start)
-    if len(content_start)>0 and content_start[0] == str_start:
+    if len(content_start)>0 and str_start in content_start[0]:
         time.sleep(5)
         global epoch_num
         epoch_num -= 1
@@ -86,10 +86,12 @@ while True:
     # img = img[830:880, 1234:1414] # [1234,830,1414,880] 匹配上课
 
     # 识别匹配上课
+    flag0 = is_start(img, '准备')
     flag1 = is_start(img, '匹配上课')
     flag2 = is_start(img, '上课')
     flag3 = is_start(img, '学院活动匹配')
-    if flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
+    if flag0 or flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
+        time.sleep(1)
         continue
     
     # 识别继续按钮
