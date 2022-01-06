@@ -168,13 +168,21 @@ if __name__ == '__main__':
     sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.退出\n')
     if sel == '3':
         exit()
+    
+    iter = '0'
+    iter = input("一轮多少题？0-10题1-15题")
+    if iter == '0':
+        iter_num = 15
+    else:
+        iter_num = 10
+    
     epoch = input('进行几次？默认3次\n')
     
     if(epoch != ''):
         epoch_num = int(epoch)
     question_num = 0
     while True:
-        if(question_num==15):
+        if(question_num==iter_num):
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:

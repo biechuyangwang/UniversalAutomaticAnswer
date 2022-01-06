@@ -185,13 +185,19 @@ if __name__ == '__main__':
         hwnd_mul_edge = win32gui.FindWindow(None, "网易大神 云游戏 - Google Chrome")
         win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
     # 网易云游戏平台 - 个人 - Microsoft​ Edge
+    iter = '0'
+    iter = input("一轮多少题？0-10题1-15题")
+    if iter == '1':
+        iter_num = 15
+    else:
+        iter_num = 10
     epoch = input('进行几次？默认3次\n')
     
     if(epoch != ''):
         epoch_num = int(epoch)
     question_num = 0
     while True:
-        if(question_num==15):
+        if(question_num==iter_num):
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:
