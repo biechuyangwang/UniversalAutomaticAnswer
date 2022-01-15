@@ -43,6 +43,10 @@ if __name__ == '__main__':
     start = time.time()*1000
 
     img = cv2.imread(screen.ravenclaw_imgpath)
+
+    img_path = './img/harry_2022_01_01_12_22_37.png'
+    img = cv2.imread(img_path)
+
     # print(win_rect)
     QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
     person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
@@ -56,7 +60,7 @@ if __name__ == '__main__':
     resultp1 = ocr.ocr(person1State)
     resultp2 = ocr.ocr(person2State)
     resultp3 = ocr.ocr(person3State)
-    # print(resultq)
+    print(resultp3)
 
     contentq = ocr.ocr_content(resultq)
     contenta = ocr.ocr_content(resulta)

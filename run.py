@@ -165,18 +165,18 @@ if __name__ == '__main__':
     sel = '1'
     epoch_num = 20
 
-    sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.退出\n')
+    sel = input('魔法史还是学院活动？\n1.魔法史 2.学院活动 3.退出\n')
     if sel == '3':
         exit()
     
     iter = '0'
-    iter = input("一轮多少题？0-10题1-15题")
+    iter = input("一轮多少题？\n0-10题1-15题\n")
     if iter == '0':
         iter_num = 15
     else:
         iter_num = 10
     
-    epoch = input('进行几次？默认3次\n')
+    epoch = input('进行几次？\n默认3次\n')
     
     if(epoch != ''):
         epoch_num = int(epoch)
@@ -261,9 +261,12 @@ if __name__ == '__main__':
                 person1State, person2State, person3State = screen.get_personState(img)
             elif sel == '2':
                 person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
-            contentPerson1 = ocr.ocr_content(person1State)
-            contentPerson2 = ocr.ocr_content(person2State)
-            contentPerson3 = ocr.ocr_content(person3State)
+            resultPerson1 = ocr.ocr(person1State)
+            resultPerson2 = ocr.ocr(person2State)
+            resultPerson3 = ocr.ocr(person3State)
+            contentPerson1 = ocr.ocr_content(resultPerson1)
+            contentPerson2 = ocr.ocr_content(resultPerson2)
+            contentPerson3 = ocr.ocr_content(resultPerson3)
             state1 = filterPersonState(contentPerson1)
             state2 = filterPersonState(contentPerson2)
             state3 = filterPersonState(contentPerson3)
@@ -287,9 +290,12 @@ if __name__ == '__main__':
                 x,y = coordinate[3][0], coordinate[3][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 is_answered = 1
-            # else:
+            else:
             #     pass
-                # print('答案都没得抄！')
+                print('state1:',contentPerson1)
+                print('state2:',contentPerson2)
+                print('state3:',contentPerson3)
+                print('答案都没得抄！')
             # 错题就先不计了
             time.sleep(0.9)
             continue

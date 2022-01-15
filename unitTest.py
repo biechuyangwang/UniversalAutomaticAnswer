@@ -53,11 +53,12 @@ import win32gui
 sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
 from UniversalAutomaticAnswer.conf.confImp import get_yaml_file
 from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定义包
-from paddleocr import PaddleOCR
-ocr = PaddleOCR(use_angle_cls=True, lang="ch") # mode load
+from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
+
 # 获取配置文件
 conf_path = 'conf/conf.yml'
 conf_data = get_yaml_file(conf_path)
+ocr = OCRImp(conf_data) # 约定只能由一个OCR实例（有时间变成单例模式）
 
 screen = ScreenImp(conf_data)
 win_rect, img= screen.get_screenshot()
@@ -75,26 +76,37 @@ def left_click(x,y,times=4):
 walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
 card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
 copy_coordinate = [[540,400,650,500],[980,345,1090,445],[1160,320,1260,420]]
-# img_path = './img/harry_test_state.png'
+img_path = './img/harry_2022_01_01_05_22_08.png'
 # img_path = './img/harrypotter_start_xueyuan.png'
-# img = cv2.imread(img_path)
+img = cv2.imread(img_path)
 import matplotlib.pyplot as plt
 # img = img[720:920,131:1460,::-1] # 131 720 1460 920
-img = img[:,:,::-1]
+# img = img[:,:,::-1]
+img_test = img[585:650,885:1190]
 start_button = img[829:900,1200:1500] # [1200,820,1500,900]
-option1 = img[720:820,131:520,::-1]
+option1 = img[720:820,131:520,::-1] 
 option2 = img[720:820,831:1260,::-1]
 option3 = img[820:920,131:520,::-1]
 option4 = img[820:920,831:1260,::-1]
 # img1 = img[385:495,530:640,::-1]
 # img2 = img[345:445,980:1090]
 # img3 = img[310:420,1155:1265]
-status1 = img[385:495,530:640] # [[[568.0, 397.0], [625.0, 397.0], [625.0, 421.0], [568.0, 421.0]], ('/+15', 0.86291903)]
-status2 = img[345:445,980:1090] # [[[999.0, 355.0], [1079.0, 355.0], [1079.0, 381.0], [999.0, 381.0]], ('V+15', 0.87752867)]
-status3 = img[310:420,1155:1265] # [[[1177.0, 333.0], [1259.0, 333.0], [1259.0, 359.0], [1177.0, 359.0]], ('<+20', 0.8773143)]
-result = ocr.ocr(start_button, det=True, cls=True)
+img_steps = img[800:850, 200:265]
+img_1 = img[710:777, 615:665] # 1
+img_2 = img[710:777, 770:820] # 2
+img_3 = img[710:777, 920:970] # 3
+img_4 = img[720:787, 1060:1110] # 4
+
+status1 = img[385:495,525:655] # 585 385 男
+status2 = img[330:450,970:1100] # 1030 330
+status3 = img[310:420,1155:1280] # 1210 310
+
+status1_xueyuan = img[266:366,450:580] # [[[455.0, 285.0], [575.0, 285.0], [575.0, 314.0], [455.0, 314.0]], ('√+25×2', 0.82764864)] # 450 266 580 366
+status2_xueyuan = img[266:366,720:850] # [[[733.0, 267.0], [1073.0, 285.0], [1073.0, 314.0], [982.0, 314.0]], ('<+20', 0.9363441)] # 720 266 850 366
+status3_xueyuan = img[266:366,970:1100] # [[[982.0, 285.0], [1073.0, 285.0], [1073.0, 314.0], [982.0, 314.0]], ('<+20', 0.9363441)] # 970 266 1100 366
+result = ocr.ocr(status3)
 print(result)
-plt.imshow(start_button)
+plt.imshow(status3)
 plt.show()
 # """
 """
