@@ -13,12 +13,48 @@ import random
 import warnings
 warnings.filterwarnings('ignore') # warnings有点多，过滤一下
 
-walk_coordinate = [[192,287],[95,615],[436,360],[487,538],[717,629],[689,303]]
+walk_coordinate = [[192,287],[140,460],[95,615],[436,360],[460,499],[487,538],[717,629],[700,466],[689,303]]
+walk_coordinate_houpai = [[192,287],[140,460],[95,615]]
+walk_coordinate_zhonghou = [[192,287],[140,460],[95,615],[436,360],[460,499],[487,538]]
+walk_coordinate_qianzhong = [[717,629],[700,466],[689,303],[436,360],[460,499],[487,538]]
+walk_coordinate_qianpai = [[717,629],[700,466],[689,303]]
+
 card_coordinate = [[560,820],[695,820],[842,814],[985,829],[1390,830]]
+houpai = ['弗立维','哈利','赫敏','罗恩','纳威','卢娜',]
+zhonghou = ['乔治','纽特','塞德里克','马尔福']
+qianzhong = ['麦格','多比']
+qianpai = ['斯内普','贝拉']
 
 # sellist ['弗立维','麦格','斯内普','贝拉','哈利','赫敏','罗恩','乔治','纽特','纳威','多比','塞德里克','卢娜','马尔福']
 # needsellist = ['弗立维','麦格','斯内普','贝拉']
 needsellist = []
+walk_point_num = 9
+def matchweizhi(val):
+    global walk_coordinate
+    walk_coordinate = []
+    global walk_point_num
+    for x in houpai:
+        if x in val:
+            walk_coordinate = walk_coordinate_houpai
+            walk_point_num = len(walk_coordinate_houpai)
+            return
+    for x in zhonghou:
+        if x in val:
+            walk_coordinate = walk_coordinate_zhonghou
+            walk_point_num = len(walk_coordinate_zhonghou)
+            return
+    for x in qianzhong:
+        if x in val:
+            walk_coordinate = walk_coordinate_qianzhong
+            walk_point_num = len(walk_coordinate_qianzhong)
+            return
+    for x in qianpai:
+        if x in val:
+            walk_coordinate = walk_coordinate_qianpai
+            walk_point_num = len(walk_coordinate_qianpai)
+            return
+    return
+
 def matchlist(needsellist,val):
     for x in needsellist:
         if x in val:
@@ -171,9 +207,11 @@ if __name__ == '__main__':
             if issel1inlist and not issel2inlist:
                 x, y = 521, 521
                 print('优先选择了'+content_sel1[0])
+                matchweizhi(content_sel1[0])
             elif issel2inlist and not issel1inlist:
                 x, y = 1000, 521
                 print('优先选择了'+content_sel2[0])
+                matchweizhi(content_sel2[0])
             else:
                 idx = random.randint(1, 2)
                 if idx == 1:
@@ -183,6 +221,7 @@ if __name__ == '__main__':
                     # content_sel = filterLine(content_sel)
                     x, y = 521, 521
                     print('随机选择了'+content_sel1[0])
+                    matchweizhi(content_sel1[0])
                 else:
                     # sel = img[585:650,885:1190]
                     # result_sel = ocr.ocr(sel)
@@ -190,6 +229,7 @@ if __name__ == '__main__':
                     # content_sel = filterLine(content_sel)
                     x, y = 1000, 521
                     print('随机选择了'+content_sel2[0])
+                    matchweizhi(content_sel2[0])
             left_click(win_rect[0]+x,win_rect[1]+y,2) # 选定角色
             time.sleep(2)
 
@@ -242,8 +282,9 @@ if __name__ == '__main__':
         else:
             result_5 = -1
         
+        # walk_point_num = len(card_coordinate)
         idx = random.randint(1, 4)
-        walk_idx = random.randint(0,3)
+        walk_idx = random.randint(0,walk_point_num-1)
         x_walk, y_walk = walk_coordinate[walk_idx][0], walk_coordinate[walk_idx][1]
         x_0, y_0 = card_coordinate[0][0], card_coordinate[0][1] # 伙伴卡
         x, y = card_coordinate[idx][0], card_coordinate[idx][1]

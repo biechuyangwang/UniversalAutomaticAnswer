@@ -254,7 +254,7 @@ if __name__ == '__main__':
                     x, y = 747,830
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
                 if sel == '2' or sel == '6' or sel == '7':
-                    time.sleep(10)
+                    time.sleep(4)
                     x, y = 1200, 890
                     left_click(win_rect[0]+x,win_rect[1]+y,2)
                 if sel == '6' or sel == '7':
@@ -282,10 +282,10 @@ if __name__ == '__main__':
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
                 if sel == '5' or sel == '7':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
                 is_answered = 1
                 time.sleep(4)
                 # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
