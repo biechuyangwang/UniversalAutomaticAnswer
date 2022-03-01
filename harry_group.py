@@ -148,6 +148,15 @@ coordinate = [
     [646,888],
     [1300,888]
 ]
+
+coordinate_mul = [
+    [366,753],
+    [753,753],
+    [366,810],
+    [753,810]
+]
+padd2slef = -155
+padd2wy = -195 # 指顶110 居中265 -155 网易云游戏300
 if __name__ == '__main__':
     is_answered = 1
     # 获取配置文件
@@ -164,9 +173,17 @@ if __name__ == '__main__':
     # 截屏
     screen = ScreenImp(conf_data)
     sel = '1'
-    sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.社团答题 4.退出 \n')
+    sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.社团答题 4.退出 5.双开社团 6.多开社团 \n')
     if sel == '4':
         exit()
+    if sel == '5':
+        import win32gui
+        hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
+        win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
+    if sel == '6':
+        import win32gui
+        hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
+        win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
     while True:
         win_rect, img= screen.get_screenshot()
         # img = cv2.imread(screen.ravenclaw_imgpath)
@@ -191,7 +208,7 @@ if __name__ == '__main__':
                 flag = is_start(img, '学院活动匹配')
                 if(flag): # 识别到了就跳过，重新截图
                     continue
-            elif sel == '3': # 社团答题，手动开始
+            elif sel == '3' or sel == '5' or sel == '6': # 社团答题，手动开始
                 continue
             # 识别继续按钮
             img_continue = screen.get_continueBtn(img)
@@ -207,9 +224,15 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 20:
             if sel == '3': # 社团答题才有抢答
-                x,y = coordinate[3][0], coordinate[3][1]  # 进去，先盲猜B，B没人选，大概率能首抢
+                x,y = coordinate[3][0], coordinate[3][1]  # 进去，先盲猜D，D没人选，大概率能首抢
                 left_click(win_rect[0]+x,win_rect[1]+y,4)
                 # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
+            if sel == '5' or sel == '6': # 社团答题才有抢答
+                x,y = coordinate_mul[0][0], coordinate_mul[0][1]  # 进去，先盲猜A，A没人选，大概率能首抢
+                left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
+            if sel == '6': # 社团答题才有抢答
+                x,y = coordinate_mul[2][0], coordinate_mul[2][1]  # 进去，先盲猜B，B没人选，大概率能首抢
+                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
             is_answered = 0
             time.sleep(0.1)
             win_rect, img= screen.get_screenshot()
@@ -218,6 +241,12 @@ if __name__ == '__main__':
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,4)
+                if sel == '5' or sel == '6':
+                    x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
+                if sel == '6':
+                    x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
                 is_answered = 1
                 time.sleep(8)
             else:

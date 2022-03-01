@@ -184,7 +184,7 @@ if __name__ == '__main__':
         win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
     if sel == '5' or sel == '7':
         import win32gui
-        hwnd_mul_edge = win32gui.FindWindow(None, "网易大神 云游戏 - Google Chrome")
+        hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
         win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
     # 网易云游戏平台 - 个人 - Microsoft​ Edge
     iter = '1'
