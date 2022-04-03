@@ -176,7 +176,7 @@ if __name__ == '__main__':
     sel = input('魔法史还是学院活动？1.魔法史 2.学院活动 3.社团答题 4.退出 5.双开社团 6.多开社团 \n')
     if sel == '4':
         exit()
-    if sel == '5':
+    if sel == '5' or sel == '6':
         import win32gui
         hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
         win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
@@ -224,14 +224,14 @@ if __name__ == '__main__':
                 continue
         if countdown_num == 20:
             if sel == '3': # 社团答题才有抢答
-                x,y = coordinate[3][0], coordinate[3][1]  # 进去，先盲猜D，D没人选，大概率能首抢
+                x,y = coordinate[2][0], coordinate[2][1]  # 进去，先盲猜C，C没人选，大概率能首抢
                 left_click(win_rect[0]+x,win_rect[1]+y,4)
                 # left_click(win_rect[0]+coordinate[3][0],win_rect[1]+coordinate[3][1],1)
             if sel == '5' or sel == '6': # 社团答题才有抢答
                 x,y = coordinate_mul[0][0], coordinate_mul[0][1]  # 进去，先盲猜A，A没人选，大概率能首抢
                 left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
             if sel == '6': # 社团答题才有抢答
-                x,y = coordinate_mul[2][0], coordinate_mul[2][1]  # 进去，先盲猜B，B没人选，大概率能首抢
+                x,y = coordinate_mul[3][0], coordinate_mul[3][1]  # 进去，先盲猜B，B没人选，大概率能首抢
                 left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
             is_answered = 0
             time.sleep(0.1)

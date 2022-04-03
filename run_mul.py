@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
+sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径,可以将对应的文件路径放入下面的自定义包的__init__.py文件中，每次导入的时候会加载
 
 from UniversalAutomaticAnswer.conf.confImp import get_yaml_file
 from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定义包
 from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
-from UniversalAutomaticAnswer.util.filter import filterQuestion, filterLine, filterPersonState
+from UniversalAutomaticAnswer.util.filter import filterQuestion, filterLine, filterPersonState, maguafilterQuestion, filtertimeLine
 from UniversalAutomaticAnswer.match.matchImp import DataMatcher, match_options
+# from UniversalAutomaticAnswer.httpImp.search import searchImp
 import cv2
 import time
 import pandas as pd
@@ -18,6 +19,8 @@ warnings.filterwarnings('ignore') # warnings有点多，过滤一下
 # left click
 import win32api
 import win32con
+import numpy as np
+from PIL import ImageGrab,Image
 
 # 日志
 def make_print_to_file(path='./'):
@@ -52,12 +55,12 @@ def make_print_to_file(path='./'):
     sys.stdout = Logger(fileName + '.log', path=path)
 
 # 记录错题
-def write_new_question(info, answer_flag=""):
+def write_new_question(question=None, options=None, answer_flag=None):
     import time
     # 格式化成2021-12-01形式
     time_str = time.strftime("%Y-%m-%d", time.localtime()) 
     # print(time_str)
-    line = info[0] + ' ' + ' '.join(list(info[1])) + ' ' + answer_flag
+    line = '0 ' + question + ' ' + options[answer_flag] + ' '
     d = [line,]
     df = pd.DataFrame(data=d)
     # print(line)
@@ -66,7 +69,7 @@ def write_new_question(info, answer_flag=""):
     if not os.path.exists('./new_questions/'): # 判断文件夹是否存在，不存在则创建文件夹
         os.mkdir('./new_questions/')
     # 新题目按时间新建文件，追加的方式保留当天的新题
-    df.to_csv('./new_questions/'+time_str+'_harry_questions.csv', mode='a', header=False)
+    df.to_csv('./new_questions/'+time_str+'_harry_questions.csv', mode='a', header=False, index=None)
 
 def left_click(x,y,times=1):
     win32api.SetCursorPos((x,y))
@@ -82,12 +85,51 @@ def is_start(img, str_start):
     result_start = ocr.ocr(img_start)
     content_start = ocr.ocr_content(result_start)
     content_start = filterLine(content_start)
-    if len(content_start)>0 and str_start in content_start[0]:
-        time.sleep(5)
+    if len(content_start)>0 and str_start == content_start[0]:
         x, y = 1300, 840
         left_click(win_rect[0]+x,win_rect[1]+y,2)
+        time.sleep(3)
+        # left_click(x+init_w,y+init_h,2) # 点击匹配上课
         return True
     return False
+
+def ret_question_options(img):
+    # 一次答题流程
+    res = []
+    QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
+    resultq = ocr.ocr(QBtn)
+    resulta = ocr.ocr(ABtn)
+    resultb = ocr.ocr(BBtn)
+    resultc = ocr.ocr(CBtn)
+    resultd = ocr.ocr(DBtn)
+
+    contentq = ocr.ocr_content(resultq)
+    contenta = ocr.ocr_content(resulta)
+    contentb = ocr.ocr_content(resultb)
+    contentc = ocr.ocr_content(resultc)
+    contentd = ocr.ocr_content(resultd)
+    # print(contentq)
+
+    question, optiona,optionb,optionc,optiond = '', '', '', '' ,''
+    if len(filterQuestion(contentq))>0:
+        question = maguafilterQuestion(contentq)[0]
+    # print(question)
+    if len(question)==0:
+        # print('题目未识别！')
+        # print('源数据为：',resultq)
+        return res
+
+    if len(filterLine(contenta))>0:
+        optiona = filterLine(contenta)[0]
+    if len(filterLine(contentb))>0:
+        optionb = filterLine(contentb)[0]
+    if len(filterLine(contentc))>0:
+        optionc = filterLine(contentc)[0]
+    if len(filterLine(contentd))>0:
+        optiond = filterLine(contentd)[0]
+    options = [optiona, optionb, optionc, optiond]
+    # print('ocr结果:', [question,options])
+    return question,options
 
 def get_question_answer(img):
     # 一次答题流程
@@ -104,15 +146,16 @@ def get_question_answer(img):
     contentb = ocr.ocr_content(resultb)
     contentc = ocr.ocr_content(resultc)
     contentd = ocr.ocr_content(resultd)
-    print(contentq)
+    if(len(contentq)>0):
+        print(contentq)
 
     question, optiona,optionb,optionc,optiond = '', '', '', '' ,''
     if len(filterQuestion(contentq))>0:
         question = filterQuestion(contentq)[0]
-    print(question)
+    # print(question)
     if len(question)==0:
-        print('题目未识别！')
-        print('源数据为：',resultq)
+        # print('题目未识别！')
+        # print('源数据为：',resultq)
         return res
 
     if len(filterLine(contenta))>0:
@@ -129,6 +172,7 @@ def get_question_answer(img):
     answer_list = list(data_matcher.get_close_match(question))
     if len(answer_list) == 0 or list(answer_list[0])[1] < 40:
         print('没有匹配到题库')
+        # time.sleep(2)
         return res
     else:
         print('题库匹配结果:', answer_list[0])
@@ -136,16 +180,30 @@ def get_question_answer(img):
         res = match_options(answer, options)
         if len(res) == 0:
             print('选项OCR出错')
+            # time.sleep(2)
             return res
         print('选项匹配结果:', res)
         return res
 
+# def getclipboardimg():
+#     win32api.keybd_event(win32con.VK_SNAPSHOT,0)
+#     time.sleep(0.1)
+#     from PIL import ImageGrab,Image
+#     im = ImageGrab.grabclipboard()
+#     # PIL.BmpImagePlugin.DibImageFile to Image
+#     im = Image.frombytes('RGB', im.size, im.tobytes())
+#     import numpy as np
+#     img = np.array(im)
+#     print(img.shape)
+#     img = img[win_rect_mul_edge[1]:win_rect_mul_edge[3],2869:win_rect_mul_edge[0],::]
+#     return img
+
 
 coordinate = [
-    [646,797],
-    [1300,797],
-    [646,888],
-    [1300,888]
+    [730,775],
+    [1390,775],
+    [730,870],
+    [1390,870]
 ]
 coordinate_mul = [
     [366,753],
@@ -173,43 +231,53 @@ if __name__ == '__main__':
     # 截屏
     screen = ScreenImp(conf_data)
     sel = '1'
-    epoch_num = 20
+    epoch_num = 1
 
-    sel = input('魔法史还是学院活动？\n1.魔法史 2.学院活动 3.退出 4.魔法史双开 5.魔法史多开 6.学院活动双开 7.学院活动多开\n')
+    sel = input('魔法史还是学院活动？\n1.魔法史 2.学院活动 3.退出 4.魔法史双开 5.魔法史多开 6.学院活动双开 7.学院活动多开 8.麻瓜研究 9.麻瓜研究多开\n')
     if sel == '3':
         exit()
-    if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+    if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel=='9':
         import win32gui
         hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
-        win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
-    if sel == '5' or sel == '7':
+        if hwnd_mul_google ==0:
+            hwnd_mul_google = win32gui.FindWindow(None, r"^网易云游戏平台")
+        if hwnd_mul_google != 0:
+            win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
+    if sel == '5' or sel == '7' or sel=='9':
         import win32gui
         hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
         win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
     # 网易云游戏平台 - 个人 - Microsoft​ Edge
+    chutdown = '1'
+    chutdown = input('一题多少秒？\n0、10秒 1、12秒 2、20秒\n')
+    if chutdown == '0':
+        time_chutdown=10
     iter = '1'
-    iter = input("一轮多少题？\n0-10题1-15题\n")
+    iter = input("一轮多少题？\n0-10题1-15题2-25\n")
     if iter == '0':
         iter_num = 10
-    else:
-        iter_num = 15
+    elif iter == '2':
+        iter_num = 25
+    else: iter_num = 15
     epoch = input('进行几次？\n默认3次\n')
     
     if(epoch != ''):
         epoch_num = int(epoch)
     question_num = 0
+    chao_question,chao_options = None,None
     while True:
         if(question_num==iter_num):
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:
             break
-        # time.sleep(0.1)
         win_rect, img= screen.get_screenshot()
-        # img = cv2.imread(screen.ravenclaw_imgpath)
 
         # 识别计时器
-        img_countdown = screen.get_countdownBtn(img)
+        if sel == '8' or sel=='9':
+            img_countdown = screen.get_magua_countdownBtn(img)
+        else:
+            img_countdown = screen.get_countdownBtn(img)
         result_countdown = ocr.ocr(img_countdown)
         content_countdown = ocr.ocr_content(result_countdown)
         content_countdown = filterLine(content_countdown)
@@ -217,18 +285,110 @@ if __name__ == '__main__':
         countdown_num = -1
         if (content_countdown!=None) and len(content_countdown) > 0 and content_countdown[0].isdigit():
             countdown_num = int(content_countdown[0])
+            # print(countdown_num)
         else: # 没识别到计时器，就识别开始和继续按钮
-            if sel == '1' or sel == '4' or sel == '5' or sel == '6' or sel == '7': # 魔法史
+            # 识别奖励的中下部分继续按钮，然后识别下一轮的匹配按钮
+            img_continue = screen.get_CenterContinuBtn(img)
+            result_continue = ocr.ocr(img_continue)
+            content_continue = ocr.ocr_content(result_continue)
+            content_continue = filterLine(content_continue)
+            if len(content_continue)>0 and content_continue[0] == '点击继续':
+                x, y = 803, 903
+                left_click(win_rect[0]+x,win_rect[1]+y,4)
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
+                    x, y = 747,830
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '5' or sel == '7' or sel =='9':
+                    x, y = 747,830
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                if sel == '2' or sel == '6' or sel == '7':
+                    time.sleep(4)
+                    x, y = 1200, 890
+                    left_click(win_rect[0]+x,win_rect[1]+y,2)
+                if sel == '6' or sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                continue
+            
+            # 识别右下点击继续按钮
+            img_continue = screen.get_continueBtn(img)
+            result_continue = ocr.ocr(img_continue)
+            content_continue = ocr.ocr_content(result_continue)
+            content_continue = filterLine(content_continue)
+            if len(content_continue)>0 and content_continue[0] == '点击继续':
+                x, y = 1200, 890
+                left_click(win_rect[0]+x,win_rect[1]+y,4)
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
+                    x, y = 747,830
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '5' or sel == '7' or sel =='9':
+                    x, y = 747,830
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                if sel == '2' or sel == '6' or sel == '7':
+                    time.sleep(4)
+                    x, y = 1200, 890
+                    left_click(win_rect[0]+x,win_rect[1]+y,2)
+                if sel == '6' or sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                continue
+                
+            # 识别返回
+            img_return = screen.get_returnBtn(img)
+            result_return = ocr.ocr(img_return)
+            content_return = ocr.ocr_content(result_return)
+            content_return = filterLine(content_return)
+            if len(content_return)>0 and content_return[0] == '返回':
+                x, y = 770, 850
+                left_click(win_rect[0]+x,win_rect[1]+y,4)
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
+                    x, y = 770, 850
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '5' or sel == '7' or sel =='9':
+                    x, y = 770, 850
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                if sel == '2' or sel == '6' or sel == '7':
+                    time.sleep(4)
+                    x, y = 1200, 890
+                    left_click(win_rect[0]+x,win_rect[1]+y,2)
+                if sel == '6' or sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                if sel == '7':
+                    x, y = 1200, 890
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    time.sleep(2)
+                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                continue
+
+
+            if sel == '1' or sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel == '8' or sel =='9': # 魔法史
                 flag0 = is_start(img, '学院活动匹配')
                 flag1 = is_start(img, '匹配上课')
                 flag2 = is_start(img, '准备')
                 flag3 = is_start(img, '上课')
                 if flag0 or flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
                     time.sleep(1)
-                    if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                    if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
                         x, y = 800,800
                         left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,1)
-                    if sel == '5' or sel == '7':
+                    if sel == '5' or sel == '7' or sel =='9':
                         x, y = 800,800
                         left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,1)
                     continue
@@ -239,62 +399,71 @@ if __name__ == '__main__':
                 if flag1 or flag2 or flag3: # 识别到了就跳过，重新截图
                     time.sleep(1)
                     continue
-            # 识别继续按钮
-            img_continue = screen.get_continueBtn(img)
-            result_continue = ocr.ocr(img_continue)
-            content_continue = ocr.ocr_content(result_continue)
-            content_continue = filterLine(content_continue)
-            if len(content_continue)>0 and content_continue[0] == '点击继续':
-                x, y = 1200, 890
-                left_click(win_rect[0]+x,win_rect[1]+y,4)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-                    x, y = 747,830
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '5' or sel == '7':
-                    x, y = 747,830
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
-                if sel == '2' or sel == '6' or sel == '7':
-                    time.sleep(4)
-                    x, y = 1200, 890
-                    left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '6' or sel == '7':
-                    x, y = 1200, 890
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '7':
-                    x, y = 1200, 890
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
-                continue
+            
+            # # 识别麻瓜课分数，并保存满分截图
+            # img_score = screen.get_maguascoreBtn(img)
+            # result_score = ocr.ocr(img_score)
+            # content_score = ocr.ocr_content(result_score)
+            # content_score = filterLine(content_score)
+            # content_score_num = 0
+            # if (content_score!=None) and len(content_score) > 0 and content_score[0].isdigit():
+            #     content_score_num = int(content_score[0])
+            # # print('question_num:',question_num)
+            # # print('score:',content_score_num)
+            # if content_score_num >= 1100:
+            #     import datetime
+            #     fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
+            #     cv2.imwrite('img/harry_fullscore'+fileName, img)
+            #     time.sleep(2)
+
+           
         # cv2.imwrite('./img/harry_state_1216.png',img)
+        # if countdown_num == time_chutdown or countdown_num == time_chutdown-1:
         if countdown_num == time_chutdown:
             question_num += 1
             # print('第%d题'%question_num)
             is_answered = 0
-            time.sleep(0.1) #学院活动出题满了这一会，不然扫描不到题目
-            win_rect, img= screen.get_screenshot()
+            # time.sleep(0.1) #学院活动出题满了这一会，不然扫描不到题目
+            # win_rect, img= screen.get_screenshot()
             # img = cv2.imread(screen.ravenclaw_imgpath)
 
             # cv2.imwrite('./img/harry1216.png',img)
-
+            s_time = time.time()*1000
             res = get_question_answer(img)
+            if len(res) ==0:
+                win_rect, img= screen.get_screenshot()
+                res = get_question_answer(img)
+            # time.sleep(0.1)
+            # win_rect, img= screen.get_screenshot()
+            # res = get_question_answer(img)
+            print('ocr时间: {}ms'.format(time.time()*1000-s_time))
             if len(res) >0:
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
-                if sel == '5' or sel == '7':
+                if sel == '5' or sel == '7' or sel =='9':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
                 is_answered = 1
-                time.sleep(4)
+                # question_num += 1
+                print('epoch_num:',epoch_num)
+                print('question_num:',question_num)
+                time.sleep(1)
                 # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
                 # cv2.imwrite('./img/harry_test_1218.png',img)
             else:
+                chao_question,chao_options = ['',['','','','']]
                 time.sleep(1)
                 print('抄答案吧！')
+                in_rect, img = screen.get_screenshot()
+                import datetime
+                fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
+                cv2.imwrite('img/harry_'+fileName, img)
             continue
-        if (is_answered == 0 and countdown_num > 3):
+        if (is_answered == 0 and countdown_num >= 5):
             # if countdown_num >=10:
             #     win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
             # img = cv2.imread(screen.ravenclaw_imgpath)
@@ -302,56 +471,66 @@ if __name__ == '__main__':
                 person1State, person2State, person3State = screen.get_personState(img)
             elif sel == '2' or sel == '6' or sel == '7':
                 person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
+            elif sel == '8' or sel == '9':
+                person1State, person2State, person3State = screen.get_magua_personState(img)
             resultPerson1 = ocr.ocr(person1State)
             resultPerson2 = ocr.ocr(person2State)
             resultPerson3 = ocr.ocr(person3State)
+            # print(resultPerson1)
+            # print(resultPerson2)
+            # print(resultPerson3)
             contentPerson1 = ocr.ocr_content(resultPerson1)
             contentPerson2 = ocr.ocr_content(resultPerson2)
             contentPerson3 = ocr.ocr_content(resultPerson3)
             state1 = filterPersonState(contentPerson1)
             state2 = filterPersonState(contentPerson2)
             state3 = filterPersonState(contentPerson3)
+            relstate = -1
             if state1 == 'A' or state2 == 'A' or state3 == 'A':
                 print('这题抄A')
+                relstate = 0
                 x,y = coordinate[0][0], coordinate[0][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[0][0], coordinate_mul[0][1]
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '5' or sel == '7':
+                if sel == '5' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[0][0], coordinate_mul[0][1]
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'B' or state2 == 'B' or state3 == 'B':
                 print('这题抄B')
+                relstate = 1
                 x,y = coordinate[1][0], coordinate[1][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[1][0], coordinate_mul[1][1]
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '5' or sel == '7':
+                if sel == '5' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[1][0], coordinate_mul[1][1]
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
                 is_answered = 1
-            elif state1 == 'C' or state2 == 'C' or state3 == 'C':
+            elif state1 == 'C' or state2 == 'C' or state3 == 'C' or state1 == 'c' or state2 == 'c' or state3 == 'c':
                 print('这题抄C')
+                relstate = 2
                 x,y = coordinate[2][0], coordinate[2][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '5' or sel == '7':
+                if sel == '5' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'D' or state2 == 'D' or state3 == 'D':
                 print('这题抄D')
+                relstate = 3
                 x,y = coordinate[3][0], coordinate[3][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
-                if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+                if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9' :
                     x, y = coordinate_mul[3][0], coordinate_mul[3][1]
                     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-                if sel == '5' or sel == '7':
+                if sel == '5' or sel == '7' or sel =='9':
                     x, y = coordinate_mul[3][0], coordinate_mul[3][1]
                     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
                 is_answered = 1
@@ -362,26 +541,79 @@ if __name__ == '__main__':
                 print('state3:',contentPerson3)
                 print('答案都没得抄！')
             # 错题就先不计了
-            time.sleep(0.9)
+            if is_answered == 1:
+                question,options = ret_question_options(img)
+                write_new_question(question, options, relstate)
+            time.sleep(0.5)
             continue
-        elif (is_answered == 0 and countdown_num == 3):
-            print('这题盲猜C')
-            x,y = coordinate[2][0], coordinate[2][1]
-            left_click(win_rect[0]+x,win_rect[1]+y,2)
-            if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-                x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-            if sel == '5' or sel == '7':
-                x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+        elif (is_answered == 0 and countdown_num == 4):
+        #     searchimp = searchImp(conf_data)
+        #     question,options = ret_question_options(img)
+        #     print(question,options)
+        #     ans_baidu = searchimp.baidu(question, options)
+        #     print('百度答案：',ans_baidu)
+        #     print('百度选：',chr(ord('A')+int(ans_baidu[0][2])))
+        #     tmp = int(ans_baidu[0][2])
+        #     x,y = coordinate[tmp][0], coordinate[tmp][1]
+        #     left_click(win_rect[0]+x,win_rect[1]+y,2)
+        #     if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+        #         x,y = coordinate[tmp][0], coordinate[tmp][1]
+        #         left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
+        #     if sel == '5' or sel == '7':
+        #         x,y = coordinate[tmp][0], coordinate[tmp][1]
+        #         left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
+
+            # print('这题盲猜C')
+            # x,y = coordinate[2][0], coordinate[2][1]
+            # left_click(win_rect[0]+x,win_rect[1]+y,2)
+            # if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+            #     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
+            #     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+            # if sel == '5' or sel == '7':
+            #     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
+            #     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
             is_answered = 2 # 表示没得抄，盲猜
-        if is_answered == 2 and countdown_num == 0:
+        if is_answered == 2:
+            # if sel == '8' or sel == '9':
+            #     time.sleep(1)
+            print('这题盲猜D')
+            x,y = coordinate[3][0], coordinate[3][1]
+            left_click(win_rect[0]+x,win_rect[1]+y,2)
+            # question_num += 1
+            if sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel =='9':
+                x, y = coordinate_mul[3][0], coordinate_mul[3][1]
+                left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+            if sel == '5' or sel == '7' or sel =='9':
+                x, y = coordinate_mul[3][0], coordinate_mul[3][1]
+                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+            # time.sleep(0.5)
             in_rect, img = screen.get_screenshot()
             import datetime
             fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
-            
-            # from PIL import Image
-            # im = Image.fromarray(img)
-            # im.save('img/harry_'+fileName)
             cv2.imwrite('img/harry_'+fileName, img)
-            time.sleep(2)
+            # time.sleep(2)
+            is_answered = 3
+            # if chao_question == '':
+            #     continue
+            # correctA = img[610:670,607:667] 
+            # correctB = img[610:670,1307:1367]
+            # correctC = img[710:770,607:667] 
+            # correctD = img[710:770,1307:1367] 
+            # # print(np.mean(correctA)) # 44.67 # 74.64
+            # # print(np.mean(correctB)) # 83.39 # 100.87
+            # # print(np.mean(correctC)) # 51.57 # 78.90
+            # # print(np.mean(correctD)) # # 92.98 # 82.33
+            # # question,options = ret_question_options(img)
+            # print(chao_question,chao_options)
+            # if 69<np.mean(correctA)<70:
+            #     print('记录A')
+            #     write_new_question(chao_question, chao_options, 0)
+            # elif 95<np.mean(correctB)<105:
+            #     print('记录B')
+            #     write_new_question(chao_question, chao_options, 1)
+            # elif 70<np.mean(correctC)<85:
+            #     print('记录C')
+            #     write_new_question(chao_question, chao_options, 2)
+            # elif 87<np.mean(correctD)<97:
+            #     print('记录D')
+            #     write_new_question(chao_question, chao_options, 3)

@@ -1,3 +1,5 @@
+
+
 # 通用截屏
 # import numpy as np
 # import win32gui
@@ -50,22 +52,68 @@
 import cv2
 import sys
 import win32gui
+from paddleocr import draw_ocr
+from run import get_question_answer
 sys.path.append(r"C:\\Users\\SAT") # 添加自定义包的路径
 from UniversalAutomaticAnswer.conf.confImp import get_yaml_file
 from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定义包
 from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
+from UniversalAutomaticAnswer.conf.confImp import get_yaml_file
+from UniversalAutomaticAnswer.screen.screenImp import ScreenImp # 加入自定义包
+from UniversalAutomaticAnswer.ocr.ocrImp import OCRImp
+from UniversalAutomaticAnswer.util.filter import filterQuestion, filterLine, filterPersonState, maguafilterQuestion
+from UniversalAutomaticAnswer.httpImp.search import searchImp
 
 # 获取配置文件
 conf_path = 'conf/conf.yml'
 conf_data = get_yaml_file(conf_path)
 ocr = OCRImp(conf_data) # 约定只能由一个OCR实例（有时间变成单例模式）
 
-screen = ScreenImp(conf_data)
-win_rect, img= screen.get_screenshot()
+# screen = ScreenImp(conf_data)
+# win_rect, img= screen.get_screenshot()
 
 # left click
 import win32api
 import win32con
+
+def ret_question_options(img):
+    # 一次答题流程
+    res = []
+    QBtn, ABtn, BBtn, CBtn, DBtn = screen.get_questionAndoptionsBtn(img)
+    resultq = ocr.ocr(QBtn)
+    resulta = ocr.ocr(ABtn)
+    resultb = ocr.ocr(BBtn)
+    resultc = ocr.ocr(CBtn)
+    resultd = ocr.ocr(DBtn)
+
+    contentq = ocr.ocr_content(resultq)
+    contenta = ocr.ocr_content(resulta)
+    contentb = ocr.ocr_content(resultb)
+    contentc = ocr.ocr_content(resultc)
+    contentd = ocr.ocr_content(resultd)
+    # print(contentq)
+
+    question, optiona,optionb,optionc,optiond = '', '', '', '' ,''
+    if len(filterQuestion(contentq))>0:
+        question = maguafilterQuestion(contentq)[0]
+    # print(question)
+    if len(question)==0:
+        print('题目未识别！')
+        print('源数据为：',resultq)
+        return res
+
+    if len(filterLine(contenta))>0:
+        optiona = filterLine(contenta)[0]
+    if len(filterLine(contentb))>0:
+        optionb = filterLine(contentb)[0]
+    if len(filterLine(contentc))>0:
+        optionc = filterLine(contentc)[0]
+    if len(filterLine(contentd))>0:
+        optiond = filterLine(contentd)[0]
+    options = [optiona, optionb, optionc, optiond]
+    # print('ocr结果:', [question,options])
+    return question,options
+
 def left_click(x,y,times=4):
     win32api.SetCursorPos((x,y))
     import time
@@ -76,14 +124,15 @@ def left_click(x,y,times=4):
 walk_coordinate = [[330,640],[1260,630],[740,550]] # 左 右 中
 card_coordinate = [[522,820],[695,798],[838,821],[987,818],[1185,830]] # ~ 1 2 3 4
 copy_coordinate = [[540,400,650,500],[980,345,1090,445],[1160,320,1260,420]]
-img_path = './img/harry_2022_01_01_05_22_08.png'
+img_path = './img/harry_2022_03_26_10_00_44.png'
 # img_path = './img/harrypotter_start_xueyuan.png'
 img = cv2.imread(img_path)
 import matplotlib.pyplot as plt
 # img = img[720:920,131:1460,::-1] # 131 720 1460 920
-# img = img[:,:,::-1]
-img_test = img[585:650,885:1190]
+img = img[:,:,::-1]
+img_test = img[40:100,770:840] # [770,40,840,100]
 start_button = img[829:900,1200:1500] # [1200,820,1500,900]
+jishiqi = img[55:130,760:845]
 option1 = img[720:820,131:520,::-1] 
 option2 = img[720:820,831:1260,::-1]
 option3 = img[820:920,131:520,::-1]
@@ -97,17 +146,75 @@ img_2 = img[710:777, 770:820] # 2
 img_3 = img[710:777, 920:970] # 3
 img_4 = img[720:787, 1060:1110] # 4
 
-status1 = img[385:495,525:655] # 585 385 男
-status2 = img[330:450,970:1100] # 1030 330
-status3 = img[310:420,1155:1280] # 1210 310
+status1 = img[240:350,250:380] # 585 385 男 250:355 260:370 (h,w)
+status2 = img[210:320,420:620] # 1030 330  magua 205:310 425:525
+status3 = img[415:475,1000:1110] # 1210 310  magua 365:470 1000:1110
+
+correctA = img[610:670,607:667] # 44.81 无
+correctB = img[610:670,1307:1367]
+correctC = img[710:770,607:667] # 607 667;1307 1367; 610 670 ;710 770 # 78.887 对
+correctD = img[710:770,1307:1367] # 82.2183 错
+# rect_person1_state: [290,206,370,286] # 魔法史抄答案坐标1 [206:286,290:370] 
+# rect_person2_state: [560,173,640,253] # 魔法史抄答案坐标2 [173:253,560:640]
+# rect_person3_state: [680,146,760,226] # 魔法史抄答案坐标3 [146:226,680:760] 
 
 status1_xueyuan = img[266:366,450:580] # [[[455.0, 285.0], [575.0, 285.0], [575.0, 314.0], [455.0, 314.0]], ('√+25×2', 0.82764864)] # 450 266 580 366
 status2_xueyuan = img[266:366,720:850] # [[[733.0, 267.0], [1073.0, 285.0], [1073.0, 314.0], [982.0, 314.0]], ('<+20', 0.9363441)] # 720 266 850 366
 status3_xueyuan = img[266:366,970:1100] # [[[982.0, 285.0], [1073.0, 285.0], [1073.0, 314.0], [982.0, 314.0]], ('<+20', 0.9363441)] # 970 266 1100 366
-result = ocr.ocr(status3)
+import time
+start_t = time.time()*1000
+det = False
+result = ocr.ocr(img_test,cls=True,det=det) # 只识别14.34ms 带检测24.70ms 带角度分类36.48
+# 只识别的返回值 [('4', 0.94007367)]
+# 带检测的返回值 [ [[[20.0, 17.0], [48.0, 17.0], [48.0, 47.0], [20.0, 47.0]], ('4', 0.9891465)] ] 即[ ['坐标点集',()] ]
+# 带角度不影响返回值
+print(time.time()*1000-start_t)
+
 print(result)
-plt.imshow(status3)
-plt.show()
+import numpy as np
+print(np.mean(correctA)) # 44.67 # 74.64
+print(np.mean(correctB)) # 83.39 # 100.87
+print(np.mean(correctC)) # 51.57 # 78.90
+print(np.mean(correctD)) # # 92.98 # 82.33
+# 空 对 错
+# question,options = ret_question_options(img)
+# print(question,options)
+# searchimp = searchImp(conf_data)
+# ans_baidu = searchimp.baidu(question, options)
+# print('百度答案：',ans_baidu)
+# print('百度选：',chr(ord('A')+int(ans_baidu[0][2])))
+# img_countdown = screen.get_magua_countdownBtn(img)
+# result_countdown = ocr.ocr(img_countdown)
+# content_countdown = ocr.ocr_content(result_countdown)
+# content_countdown = filterLine(content_countdown)
+# print(content_countdown)
+
+# plt.imshow(img)
+# plt.show()
+
+
+from paddleocr import PaddleOCR,draw_ocr
+# Paddleocr supports Chinese, English, French, German, Korean and Japanese.
+# You can set the parameter `lang` as `ch`, `en`, `fr`, `german`, `korean`, `japan`
+# to switch the language model in order.
+# ocr = PaddleOCR(use_angle_cls=True, lang='ch') # need to run only once to download and load model into memory
+# img_path = './imgs_en/img_12.jpg'
+# import time
+# start_time = time.time()*1000
+# result = ocr.ocr(img_path, cls=True)
+# print(time.time()*1000-start_time) # cls=False 1476ms cls=True 1616.45ms
+# print(result)
+# for line in result:
+#     print(line)
+imshow = img_test
+from PIL import Image
+boxes = [line[0] for line in result]
+txts = [line[1][0] for line in result]
+scores = [line[1][1] for line in result]
+if det != False:
+    im_show = draw_ocr(imshow, boxes, txts, scores, font_path='./fonts/simfang.ttf')
+    im_show = Image.fromarray(im_show)
+    im_show.show()
 # """
 """
 while True:

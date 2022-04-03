@@ -9,13 +9,17 @@ class OCRImp():
 
     def init_model(self, conf_data):
         self.conf_data = conf_data
-        self.ocr = PaddleOCR(use_angle_cls=True, lang="ch") # mode load
+        self.ppocr = PaddleOCR(use_angle_cls=True, lang="ch") # mode load
 
-    def ocr(self, img): # return ([坐标集], [内容集])
-        return self.ocr.ocr(img, det=True, cls=False)
+    def ocr(self, img, det=True, cls=False): # det = True return [['坐标点集', 内容集]]; det = False return [内容集]
+        result = self.ppocr.ocr(img, det=det, cls=cls)
+        if det == False:
+            result = [['',result[0]]]
+        return result
     
     def ocr_content(self, ocr_result):
-        content = [x[0] for x in ocr_result[1]]
+        # content = [x[0] for x in ocr_result[1]]
+        content = [x[1][0] for x in ocr_result]
         return content
         
         
@@ -31,7 +35,7 @@ if __name__ == '__main__':
     conf_data = get_yaml_file(conf_path)
 
     start = time.time()*1000
-    ocr = OCRImp(conf_data) # 约定只能由一个OCR实例（有时间变成单例模式）
+    ppocr = OCRImp(conf_data) # 约定只能由一个OCR实例（有时间变成单例模式）
     print("初始化ocr模型耗时：", time.time()*1000 - start)
 
     start = time.time()*1000
@@ -52,24 +56,24 @@ if __name__ == '__main__':
     person1State, person2State, person3State = screen.get_ravenclaw_personState(img)
     # result = ocr.ocr(img_bgr)
     # print(result)
-    resultq = ocr.ocr(QBtn)
-    resulta = ocr.ocr(ABtn)
-    resultb = ocr.ocr(BBtn)
-    resultc = ocr.ocr(CBtn)
-    resultd = ocr.ocr(DBtn)
-    resultp1 = ocr.ocr(person1State)
-    resultp2 = ocr.ocr(person2State)
-    resultp3 = ocr.ocr(person3State)
+    resultq = ppocr.ocr(QBtn)
+    resulta = ppocr.ocr(ABtn)
+    resultb = ppocr.ocr(BBtn)
+    resultc = ppocr.ocr(CBtn)
+    resultd = ppocr.ocr(DBtn)
+    resultp1 = ppocr.ocr(person1State)
+    resultp2 = ppocr.ocr(person2State)
+    resultp3 = ppocr.ocr(person3State)
     print(resultp3)
 
-    contentq = ocr.ocr_content(resultq)
-    contenta = ocr.ocr_content(resulta)
-    contentb = ocr.ocr_content(resultb)
-    contentc = ocr.ocr_content(resultc)
-    contentd = ocr.ocr_content(resultd)
-    contentp1 = ocr.ocr_content(resultp1)
-    contentp2 = ocr.ocr_content(resultp2)
-    contentp3 = ocr.ocr_content(resultp3)
+    contentq = ppocr.ocr_content(resultq)
+    contenta = ppocr.ocr_content(resulta)
+    contentb = ppocr.ocr_content(resultb)
+    contentc = ppocr.ocr_content(resultc)
+    contentd = ppocr.ocr_content(resultd)
+    contentp1 = ppocr.ocr_content(resultp1)
+    contentp2 = ppocr.ocr_content(resultp2)
+    contentp3 = ppocr.ocr_content(resultp3)
 
     print(contentq)
     print(contenta)

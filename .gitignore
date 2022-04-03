@@ -4,4 +4,5 @@
 **/*.log
 **/*.json
 **/*.png
-csvImp/harrypotter_questions.csv
+**/*.xlsx
+csvImp/harry*.csv
