@@ -195,7 +195,7 @@ def get_question_answer(img):
 #     import numpy as np
 #     img = np.array(im)
 #     print(img.shape)
-#     img = img[win_rect_mul_edge[1]:win_rect_mul_edge[3],2869:win_rect_mul_edge[0],::]
+#     img = img[win_rect_mul_rightgoogle_dashen[1]:win_rect_mul_rightgoogle_dashen[3],2869:win_rect_mul_rightgoogle_dashen[0],::]
 #     return img
 
 
@@ -214,165 +214,43 @@ coordinate_mul = [
 padd2slef = -155
 padd2wy = -195 # 指顶110 居中265 -155 网易云游戏300
 time_chutdown = 12
-# import win32gui
-# hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
-# win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
-win_rect_mul_google = [0,1,2,3]
+hwnd_title = dict() # 使用upadate的方式更新字典
+
+
 import win32gui
-hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
-win_rect_mul_dashen = win32gui.GetWindowRect(hwnd_mul_edge)
-init_w,init_h = win_rect_mul_dashen[0]+252,win_rect_mul_dashen[1]+162
+def get_all_hwnd(hwnd,nouse):
+  if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+    hwnd_title.update({hwnd:win32gui.GetWindowText(hwnd)})
+
+def get_Chrome_window_rect(hwnd_title, target_title):
+    win32gui.EnumWindows(get_all_hwnd, 0)
+    for h,t in hwnd_title.items():
+        if target_title in t and 'Chrom' in t: # 使用模糊搜索，需要的话可以改成正则
+            return win32gui.GetWindowRect(h)
+    return None
+
+def get_Edge_window_rect(hwnd_title, target_title):
+    win32gui.EnumWindows(get_all_hwnd, 0)
+    for h,t in hwnd_title.items():
+        if target_title in t and 'Edge' in t:
+            return win32gui.GetWindowRect(h)
+    return None
+win_rect_mul_fulledge_dashen = get_Chrome_window_rect(hwnd_title,"大神云游戏")
+# win_rect_mul_fulledge_dashen = get_Edge_window_rect(hwnd_title,"大神云游戏")
+if win_rect_mul_fulledge_dashen is not None:
+    init_w = win_rect_mul_fulledge_dashen[0]+252
+    init_h = win_rect_mul_fulledge_dashen[1]+162
+else:
+    exit()
+# init_w,init_h = win_rect_mul_fulledge_dashen[0]+252,win_rect_mul_fulledge_dashen[1]+162
 
 def screencrop():
-    # from ctypes import windll
-    # if windll.user32.OpenClipboard(None): # 打开剪切板 
-    #     windll.user32.EmptyClipboard() # 清空剪切板
-    #     windll.user32.CloseClipboard() # 关闭剪切板
-    # win32api.keybd_event(win32con.VK_SNAPSHOT,0)
-    # time.sleep(0.5)
     im = ImageGrab.grab()
-    # im = ImageGrab.grabclipboard()
-    # PIL.BmpImagePlugin.DibImageFile to Image
     im = Image.frombytes('RGB', im.size, im.tobytes())
     img = np.array(im)
-    # 245,155, 1676,959
-    # img = img[155:959,245:1676] 
     h,w=804,1431
     img = img[init_h:init_h+h,init_w:init_w+w]
-    # print(img.shape) # (1080, 1920, 3)
-    # print(win_rect_mul_dashen) # (-7, -7, 1288, 688)
-    
-
-    # print(win_rect_mul_google) # (1912, -8, 3848, 1048) 2053,103,3704,1040 h,w=937,1651
-    # cv2.imwrite('img/harry_brower_group1.png', img) 
-    # img = img[win_rect_mul_google[1]+111:win_rect_mul_google[3]-8,win_rect_mul_google[0]+141:win_rect_mul_google[2]-144,::-1]
     return img
-
-"""
-if __name__ == '__main__':
-    is_answered = 1
-    # 获取配置文件
-    conf_path = 'conf/conf.yml'
-    conf_data = get_yaml_file(conf_path)
-    make_print_to_file(path='./log/')
-    
-    # 初始化ocr模型
-    ocr = OCRImp(conf_data)
-
-    # 初始化匹配器(题库)
-    data_matcher = DataMatcher(conf_data)
-
-    # 初始化屏幕实例
-    screen = ScreenImp(conf_data)
-
-    # win32api.keybd_event(win32con.VK_SNAPSHOT,0)
-    # time.sleep(0.1)
-    # im = ImageGrab.grabclipboard()
-    # # PIL.BmpImagePlugin.DibImageFile to Image
-    # im = Image.frombytes('RGB', im.size, im.tobytes())
-    # img = np.array(im)
-    # print(img.shape) # (1080, 3840, 3)
-    # print(win_rect_mul_google) # (1912, -8, 3848, 1048) 2053,103,3704,1040 h,w=937,1651
-    # # cv2.imwrite('img/harry_brower_group1.png', img) 
-    # img = img[win_rect_mul_google[1]+111:win_rect_mul_google[3]-8,win_rect_mul_google[0]+141:win_rect_mul_google[2]-144,::-1]
-    img = screencrop() # 截图
-    img_path = './img/harry_brower_dashen_crop{}.png'.format('1_shibai')
-    img = cv2.imread(img_path)
-
-    # cv2.imwrite('img/harry_brower_dashen_crop1_shibai.png', img)
-
-    # 大神浏览器全屏魔法史
-    # 1140,700,1340,750 匹配上课
-    # img = img[700:750,1140:1340]
-    # 680,10,740,70 # 计时器 11和2识别不了
-    # img = img[10:70,680:740]
-    # 160,422,780,525 # 问题
-    # img = img[422:525,160:780]
-    # 105,600,455,655 选项A 点击640,640
-    # img = img[600:655,105:455]
-    # 805,600,1155,655 选项B 点击1340,640
-    # img = img[600:655,805:1155]
-    # 105,700,455,755 选项C 点击640,740
-    # img = img[700:755,105:455]
-    # 805,700,1155,755 选项D 点击1340,740
-    # img = img[700:755,805:1155]
-    # 465,310,565,410 玩家1
-    # 885,265,985,365 玩家2
-    # 1035,230,1135,330 玩家3
-    # img = img[310:410,465:565]
-    # img = img[265:365,885:985]
-    # img = img[230:330,1035:1135]
-    # 1060,750,1175,790 点击继续 点击1180,770
-    # img = img[750:790,1060:1175]
-    # 655,750,770,790 # 中下点击继续
-    # img = img[750:790,655:770]
-    # 大神浏览器全屏麻瓜研究
-    # 665,10,765,110 # 计时器 3和1识别不了
-    # img = img[10:110,665:765]
-    # 200,180,300,280
-    # img = img[180:280,200:310,::-1]
-    # 390,140,490,250
-    # img = img[135:250,385:490]
-    # 900,285,1000,395
-    # img = img[285:395,890:1000]
-
-    # 465,310,565,410 玩家1
-    # 885,265,985,365 玩家2
-    # 1035,230,1135,330 玩家3
-
-    # 1300,830,1500,880 匹配上课
-    # 1220,885,1340,920 课程结束后的点击继续
-    # 783,23,870,110 计时器
-    # 215,560,895,690 问题
-    # 205,730,655,775 选项A 不包括英文 205,730,655,800 包括英文
-    # 920,730,1370,775 选项B
-    # 205,835,655,880 选项C
-    # 920,835,1370,880 选项D
-    # 260,215,370,320 玩家1
-    # 460,185,560,290 玩家2
-    # 1040,350,1140,455 玩家3
-    # img = img[830:880,1300:1500]
-    # img = img[885:920,1220:1340]
-    # img = img[23:110,783:870] # 计时器
-    # img = img[560:690,215:895] # 问题
-    # img = img[730:800,205:655] # A
-    # img = img[730:800,920:1370] # B
-    # img = img[835:905,205:655] # C
-    # img = img[835:905,920:1370] # D
-    # img = img[215:320,260:370] # 玩家1
-    # img = img[185:290,460:560] # 玩家2
-    # img = img[350:455,1040:1140] # 玩家3
-    # 660,715,760,755 失败返回 点击(671, 594)
-    img = img[715:755,660:760]
-    # cpos = win32api.GetCursorPos()
-    # print(cpos)
-    # 魔法史
-    # 789,17,859,64 计时器
-    # img = img[17:64,777:877,::-1] # 计时器
-    # (46.3468085106383, 42.178936170212765, 24.879574468085107, 0.0) 12
-    # (43.97468085106383, 40.09340425531915, 24.120212765957447, 0.0) 11
-    # (57.38, 53.27872340425532, 33.282978723404256, 0.0) 10
-    # (46.38404255319149, 43.12893617021277, 27.912340425531916, 0.0) 8
-    # x = mean(img)
-    # print(x)
-    result = ocr.ocr(img)
-    print(result)
-    content = ocr.ocr_content(result)
-    content = filterLine(content)
-    # x,y = 1300,860
-    # left_click(x+win_rect_mul_google[0]+141,y+win_rect_mul_google[1]+111,2) # 点击匹配上课
-    # x,y = 1300,860
-    # left_click(x+win_rect_mul_google[0]+141,y+win_rect_mul_google[1]+111,2) # 点击继续
-    # time.sleep(20)
-    # x = input('继续\n')
-    # for i in range(30):
-    #     img = screencrop()
-    #     cv2.imwrite('img/harry_brower_dashen_crop_magua_'+str(i)+'.png', img)
-    #     time.sleep(0.9)
-    print(content)
-    plt.imshow(img)
-    plt.show()
-"""
 
 # """
 if __name__ == '__main__':
@@ -396,14 +274,19 @@ if __name__ == '__main__':
     sel = input('魔法史还是学院活动？\n1.魔法史 2.学院活动 3.退出 4.魔法史双开 5.魔法史多开 6.学院活动双开 7.学院活动多开 8.麻瓜研究 9.社团答题\n')
     if sel == '3':
         exit()
+    
     if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-        import win32gui
-        hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
-        win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
+        win_rect_mul_leftgoogle_yunyouxi = get_Chrome_window_rect(hwnd_title,"网易云游戏平台 - Google Chrome")
     if sel == '5' or sel == '7':
-        import win32gui
-        hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
-        win_rect_mul_edge = win32gui.GetWindowRect(hwnd_mul_edge)
+        win_rect_mul_rightgoogle_dashen = get_Edge_window_rect(hwnd_title,"大神云游戏")
+    # if sel == '4' or sel == '5' or sel == '6' or sel == '7':
+    #     import win32gui
+    #     hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
+    #     win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
+    # if sel == '5' or sel == '7':
+    #     import win32gui
+    #     hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
+    #     win_rect_mul_rightgoogle_dashen = win32gui.GetWindowRect(hwnd_mul_edge)
     # 网易云游戏平台 - 个人 - Microsoft​ Edge
     chutdown = '1'
     chutdown = input('一题多少秒？\n0、10秒 1、12秒 2、20秒\n')
@@ -451,29 +334,29 @@ if __name__ == '__main__':
             result_continue = ocr.ocr(img_continue)
             content_continue = ocr.ocr_content(result_continue)
             content_continue = filterLine(content_continue)
-            if len(content_continue)>0 and content_continue[0] == '点击继续': # 655,750,770,790
+            if len(content_continue)>0 and content_continue[0] in '点击继续': # 655,750,770,790
                 x, y = 639, 617
                 left_click(x,y,4)
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 if sel == '2' or sel == '6' or sel == '7':
                     time.sleep(4)
                     x, y = 639, 617
                     left_click(x,y,2)
                 if sel == '6' or sel == '7':
                     x, y = 803, 903
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '7':
                     x, y = 803, 903
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 continue
                 
             # 识别右下点击继续按钮
@@ -481,29 +364,31 @@ if __name__ == '__main__':
             result_continue = ocr.ocr(img_continue)
             content_continue = ocr.ocr_content(result_continue)
             content_continue = filterLine(content_continue)
+            if len(content_continue)>0:
+                print(content_continue)
             if len(content_continue)>0 and content_continue[0] == '点击继续':
                 x,y = 908, 617
                 left_click(x,y,2) # 点击继续
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 if sel == '2' or sel == '6' or sel == '7':
                     time.sleep(4)
                     x, y = 908, 617
                     left_click(x,y,2) # 点击继续
                 if sel == '6' or sel == '7':
                     x, y = 1200, 890
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '7':
                     x, y = 1200, 890
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 continue
             
             # 识别失败返回按钮
@@ -516,24 +401,24 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击继续
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = 747,830
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 if sel == '2' or sel == '6' or sel == '7':
                     time.sleep(4)
                     x, y = 671, 594
                     left_click(x,y,2) # 点击继续
                 if sel == '6' or sel == '7':
                     x, y = 1200, 890
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '7':
                     x, y = 1200, 890
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                     time.sleep(2)
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 continue
 
             if sel == '1' or sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel == '8': # 魔法史
@@ -545,10 +430,10 @@ if __name__ == '__main__':
                     time.sleep(1)
                     if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                         x, y = 800,800
-                        left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,1)
+                        left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,1)
                     if sel == '5' or sel == '7':
                         x, y = 800,800
-                        left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,1)
+                        left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,1)
                     continue
             elif sel == '2': # 学院活动
                 flag1 = is_start(img, '学院活动匹配')
@@ -582,10 +467,10 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击选项
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,2)
                 if sel == '5' or sel == '7':
                     x,y = coordinate_mul[res[0][2]][0], coordinate_mul[res[0][2]][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,2)
                 is_answered = 1
                 chao_question,chao_options = ret_question_options(img)
                 time.sleep(2)
@@ -626,10 +511,10 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击选项 # 抄答案
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = coordinate_mul[0][0], coordinate_mul[0][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = coordinate_mul[0][0], coordinate_mul[0][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'B' or state2 == 'B' or state3 == 'B':
                 print('这题抄B')
@@ -638,10 +523,10 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击选项 # 抄答案
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = coordinate_mul[1][0], coordinate_mul[1][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = coordinate_mul[1][0], coordinate_mul[1][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'C' or state2 == 'C' or state3 == 'C' or state1 == 'c' or state2 == 'c' or state3 == 'c':
                 print('这题抄C')
@@ -650,10 +535,10 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击选项 # 抄答案
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'D' or state2 == 'D' or state3 == 'D':
                 print('这题抄D')
@@ -662,10 +547,10 @@ if __name__ == '__main__':
                 left_click(x,y,2) # 点击选项 # 抄答案
                 if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                     x, y = coordinate_mul[3][0], coordinate_mul[3][1]
-                    left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                    left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
                 if sel == '5' or sel == '7':
                     x, y = coordinate_mul[3][0], coordinate_mul[3][1]
-                    left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                    left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             else:
             #     pass
@@ -694,7 +579,7 @@ if __name__ == '__main__':
         #         left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
         #     if sel == '5' or sel == '7':
         #         x,y = coordinate[tmp][0], coordinate[tmp][1]
-        #         left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,2)
+        #         left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,2)
 
             # print('这题盲猜C')
             # x,y = coordinate[2][0], coordinate[2][1]
@@ -704,7 +589,7 @@ if __name__ == '__main__':
             #     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
             # if sel == '5' or sel == '7':
             #     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-            #     left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+            #     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
             is_answered = 2 # 表示没得抄，盲猜
         if is_answered == 2:
             print('这题盲猜D')
@@ -712,10 +597,10 @@ if __name__ == '__main__':
             left_click(x,y,2) # 点击选项 # 盲猜
             if sel == '4' or sel == '5' or sel == '6' or sel == '7':
                 x, y = coordinate_mul[3][0], coordinate_mul[3][1]
-                left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
+                left_click(win_rect_mul_leftgoogle_yunyouxi[0]+x,win_rect_mul_leftgoogle_yunyouxi[1]+y,4)
             if sel == '5' or sel == '7':
                 x, y = coordinate_mul[3][0], coordinate_mul[3][1]
-                left_click(win_rect_mul_edge[0]+x,win_rect_mul_edge[1]+y+padd2wy,4)
+                left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
             # in_rect, img = screen.get_screenshot()
             # time.sleep(3)
             img = screencrop()

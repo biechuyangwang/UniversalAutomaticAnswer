@@ -15,7 +15,16 @@ class searchImp():
         self.google_as_qdr = self.conf_data['search']['google']['as_qdr']
         self.google_as_occt = self.conf_data['search']['google']['as_occt']
 
-    def baidu(self, question, options): # 百度搜索
+    def baidu(self, question, options):
+        u"""百度搜索
+
+        Args:
+            question (str): 问题
+            options (list): 选项
+
+        Returns:
+            list: 排序结果
+        """        
         url = 'https://www.baidu.com/s?'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
@@ -43,8 +52,6 @@ class searchImp():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
         }
-        # https://www.baidu.com/s?q1=question&rn=10&lm=0&ct=0&tn=baiduadv
-        # q1->question rn->每页显示的条数(10,20,50) lm->最近时间内搜索(0,1,7,30,360) ct->搜索语言(0:全部,1:简体,2:繁体) tn->搜索类型('baiduadv':百度高级搜索)
         data = {
             'as_q': question,
             'lr': self.google_lr,
@@ -62,14 +69,12 @@ class searchImp():
         ret.sort(reverse=True)
         return ret
     
-    def bing(self, question, options): # 百度搜索
+    def bing(self, question, options): # bing搜索
         url = 'https://cn.bing.com/search?'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
         }
         ret = options.copy()
-        # https://www.baidu.com/s?q1=question&rn=10&lm=0&ct=0&tn=baiduadv
-        # q1->question rn->每页显示的条数(10,20,50) lm->最近时间内搜索(0,1,7,30,360) ct->搜索语言(0:全部,1:简体,2:繁体) tn->搜索类型('baiduadv':百度高级搜索)
         data = {
             'q': question
         }
@@ -81,14 +86,21 @@ class searchImp():
         ret.sort(reverse=True)
         return ret
 
-    def sougou(self, question, options): # 百度搜索
+    def sougou(self, question, options):
+        u"""搜狗搜索
+
+        Args:
+            question (str): 问题
+            options (list): 选项
+
+        Returns:
+            list: 排序结果
+        """        
         url = 'https://www.sogou.com/web?'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
         }
         ret = options.copy()
-        # https://www.baidu.com/s?q1=question&rn=10&lm=0&ct=0&tn=baiduadv
-        # q1->question rn->每页显示的条数(10,20,50) lm->最近时间内搜索(0,1,7,30,360) ct->搜索语言(0:全部,1:简体,2:繁体) tn->搜索类型('baiduadv':百度高级搜索)
         data = {
             'query': question
         }

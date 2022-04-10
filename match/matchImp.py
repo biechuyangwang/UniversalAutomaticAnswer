@@ -24,7 +24,7 @@ class DataMatcher(object): # 拼音匹配算法对的解决方案
 	def init_data(self, conf_data): # 先加载题库
 		self.conf_data = conf_data
 		self.data_path = self.conf_data['path']['data_path']
-		with open(self.data_path, 'r', encoding='utf-8-sig') as csvfile:
+		with open(self.data_path, 'r', encoding='utf-8') as csvfile:
 			reader = csv.reader(csvfile,delimiter=' ')
 			self.raw_data = list(map(lambda row: (row[1], row[2]), reader))
 

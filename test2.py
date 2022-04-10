@@ -117,7 +117,6 @@ if __name__ == '__main__':
 
         import matplotlib.pyplot as plt
 
-
         det = True
         img = img[275:708,548:1055]
         result = ocr.ocr(img,cls=True,det=det) # 只识别14.34ms 带检测24.70ms 带角度分类36.48 [[1]] 1=>[[坐标集]，('内容',概率)]

@@ -557,7 +557,7 @@ if __name__ == '__main__':
             if is_answered == 1:
                 question,options = ret_question_options(img)
                 write_new_question(question, options, relstate)
-            time.sleep(0.5)
+            time.sleep(1)
             continue
         elif (is_answered == 0 and countdown_num == 4):
         #     searchimp = searchImp(conf_data)
