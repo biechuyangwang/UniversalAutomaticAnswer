@@ -7,5 +7,5 @@ def get_all_hwnd(hwnd,mouse):
 win32gui.EnumWindows(get_all_hwnd, 0)
 
 for h,t in hwnd_title.items():
-  if t is not "":
+  if t != '':
     print(h, t)

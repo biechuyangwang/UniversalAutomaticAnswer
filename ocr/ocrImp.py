@@ -9,7 +9,7 @@ class OCRImp():
 
     def init_model(self, conf_data):
         self.conf_data = conf_data
-        self.ppocr = PaddleOCR(use_angle_cls=True, lang="ch") # mode load
+        self.ppocr = PaddleOCR(use_angle_cls=True, lang="ch", show_log=False) # mode load
 
     def ocr(self, img, det=True, cls=False): # det = True return [['坐标点集', 内容集]]; det = False return [内容集]
         result = self.ppocr.ocr(img, det=det, cls=cls)

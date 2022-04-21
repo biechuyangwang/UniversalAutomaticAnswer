@@ -4,7 +4,7 @@
 def filterQuestion(question_content):
     r0 = "[0-9]+"
     r1 = "[\sa-zA-Z0-9．·“”』。,，！？!\?（）\'\"《》/\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
-    r2 = "[\s．·“”。,！？!\?（）』\'\"《》/\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
+    r2 = "[\s．·“”（）#。,！？!\?（）』\'\"《》/\-:\.：\*\.\+\$\^\[\]\(\)\{\}\|]+"
     import re
     # content_list_sub = [re.sub(r1, '', content) for content in question_content]
     content_list_sub = [re.sub(r2, '', content) for content in question_content if (len(re.sub(r1, '', content))>0 or len(re.sub(r0, '', content))==0)] # 只过滤纯英文行
@@ -25,10 +25,10 @@ def maguafilterQuestion(question_content):
     return content_list_sub
 
 def filterLine(line_content):
-    r1 = "[\s．“”（）\'\"《》，。,/\-:：·\*\+\$\^\[\]\(\)\{\}\|]+"
+    r1 = "[\s．“”（）#\'\"《》，。,!\?（）』/\-:：·\*\+\$\^\[\]\(\)\{\}\|]+"
     import re
     line = [re.sub(r1, '', content) for content in line_content]
-    line = list(dict.fromkeys(line)) # 去重，避免纯数字重复连接
+    # line = list(dict.fromkeys(line)) # 去重，避免纯数字重复连接
     if len(line) >= 2: # 过滤后拼接，修复因断句导致的错误
         return [''.join(x for x in line)]
     return line

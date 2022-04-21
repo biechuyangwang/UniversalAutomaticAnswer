@@ -216,6 +216,8 @@ padd2wy = -195 # 指顶110 居中265 -155 网易云游戏300
 time_chutdown = 12
 
 if __name__ == '__main__':
+    total_time = 0
+    total_num = 0
     is_answered = 1
     # 获取配置文件
     conf_path = 'conf/conf.yml'
@@ -270,6 +272,7 @@ if __name__ == '__main__':
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:
+            print('此次答题平均每题耗时：{}'.format(1.0*total_time/total_num))
             break
         win_rect, img= screen.get_screenshot()
 
@@ -429,6 +432,7 @@ if __name__ == '__main__':
 
             # cv2.imwrite('./img/harry1216.png',img)
             s_time = time.time()*1000
+            win_rect, img= screen.get_screenshot()
             res = get_question_answer(img)
             if len(res) ==0:
                 win_rect, img= screen.get_screenshot()
@@ -437,6 +441,9 @@ if __name__ == '__main__':
             # win_rect, img= screen.get_screenshot()
             # res = get_question_answer(img)
             print('ocr时间: {}ms'.format(time.time()*1000-s_time))
+            total_time += time.time()*1000-s_time
+            total_num += 1
+            
             if len(res) >0:
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]

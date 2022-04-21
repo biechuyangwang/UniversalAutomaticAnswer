@@ -234,8 +234,11 @@ coordinate_mul = [
 padd2slef = -155
 padd2wy = -195 # 指顶110 居中265 -155 网易云游戏300
 time_chutdown = 12
+iter_num = 15
 
 if __name__ == '__main__':
+    total_time = 0
+    total_num =0
     is_answered = 1
     # 获取配置文件
     conf_path = 'conf/conf.yml'
@@ -271,7 +274,6 @@ if __name__ == '__main__':
         iter_num = 10
     elif iter == '2':
         iter_num = 25
-    else: iter_num = 15
     epoch = input('进行几次？\n默认3次\n')
     
     if(epoch != ''):
@@ -283,6 +285,7 @@ if __name__ == '__main__':
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:
+            print('此次答题平均每题耗时：{}'.format(1.0*total_time/total_num))
             break
         win_rect, img= screen.get_screenshot()
 
@@ -441,16 +444,19 @@ if __name__ == '__main__':
             # img = cv2.imread(screen.ravenclaw_imgpath)
 
             # cv2.imwrite('./img/harry1216.png',img)
+            print('epoch_num:{}, question_num:{}'.format(epoch_num,question_num))
             s_time = time.time()*1000
+            win_rect, img= screen.get_screenshot()
             res = get_question_answer(img)
             if len(res) ==0:
                 win_rect, img= screen.get_screenshot()
                 res = get_question_answer(img)
-            # time.sleep(0.1)
-            # win_rect, img= screen.get_screenshot()
-            # res = get_question_answer(img)
             print('ocr时间: {}ms'.format(time.time()*1000-s_time))
+            total_time += time.time()*1000-s_time
+            total_num += 1
+
             if len(res) >0:
+                countdown_num = -1
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(win_rect[0]+x,win_rect[1]+y,2)
@@ -462,19 +468,14 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,2)
                 is_answered = 1
                 # question_num += 1
-                print('epoch_num:',epoch_num)
-                print('question_num:',question_num)
-                time.sleep(1)
+                chao_question,chao_options = ret_question_options(img)
+                time.sleep(2)
                 # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
                 # cv2.imwrite('./img/harry_test_1218.png',img)
             else:
                 chao_question,chao_options = ['',['','','','']]
                 time.sleep(1)
                 print('抄答案吧！')
-                in_rect, img = screen.get_screenshot()
-                import datetime
-                fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
-                cv2.imwrite('img/harry_'+fileName, img)
             continue
         if (is_answered == 0 and countdown_num >= 5):
             # if countdown_num >=10:
@@ -557,9 +558,9 @@ if __name__ == '__main__':
             if is_answered == 1:
                 question,options = ret_question_options(img)
                 write_new_question(question, options, relstate)
-            time.sleep(1)
+            time.sleep(0.5)
             continue
-        elif (is_answered == 0 and countdown_num == 4):
+        elif (is_answered == 0 and countdown_num <= 4):
         #     searchimp = searchImp(conf_data)
         #     question,options = ret_question_options(img)
         #     print(question,options)
@@ -587,8 +588,6 @@ if __name__ == '__main__':
             #     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
             is_answered = 2 # 表示没得抄，盲猜
         if is_answered == 2:
-            # if sel == '8' or sel == '9':
-            #     time.sleep(1)
             print('这题盲猜D')
             x,y = coordinate[3][0], coordinate[3][1]
             left_click(win_rect[0]+x,win_rect[1]+y,2)

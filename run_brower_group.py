@@ -49,7 +49,8 @@ def make_print_to_file(path='./'):
             self.log.write(message)
 
         def flush(self):
-            pass
+            self.terminal.flush()
+            self.log.flush()
 
     fileName = datetime.datetime.now().strftime('log_'+'%Y_%m_%d_%H')
     sys.stdout = Logger(fileName + '.log', path=path)
@@ -176,6 +177,8 @@ def get_question_answer(img):
         return res
     else:
         print('题库匹配结果:', answer_list[0])
+        if(answer_list[0][1] <= 50):
+            print('可能题库匹配错误')
         answer = answer_list[0][0][1]
         res = match_options(answer, options)
         if len(res) == 0:
@@ -183,6 +186,8 @@ def get_question_answer(img):
             # time.sleep(2)
             return res
         print('选项匹配结果:', res)
+        if(res[0][1]<=50):
+            print('可能选项错误')
         return res
 
 # def getclipboardimg():
@@ -214,6 +219,7 @@ coordinate_mul = [
 padd2slef = -155
 padd2wy = -195 # 指顶110 居中265 -155 网易云游戏300
 time_chutdown = 12
+iter_num = 15
 hwnd_title = dict() # 使用upadate的方式更新字典
 
 
@@ -254,6 +260,8 @@ def screencrop():
 
 # """
 if __name__ == '__main__':
+    total_time = 0
+    total_num = 0
     is_answered = 1
     # 获取配置文件
     conf_path = 'conf/conf.yml'
@@ -274,44 +282,37 @@ if __name__ == '__main__':
     sel = input('魔法史还是学院活动？\n1.魔法史 2.学院活动 3.退出 4.魔法史双开 5.魔法史多开 6.学院活动双开 7.学院活动多开 8.麻瓜研究 9.社团答题\n')
     if sel == '3':
         exit()
-    
     if sel == '4' or sel == '5' or sel == '6' or sel == '7':
         win_rect_mul_leftgoogle_yunyouxi = get_Chrome_window_rect(hwnd_title,"网易云游戏平台 - Google Chrome")
     if sel == '5' or sel == '7':
         win_rect_mul_rightgoogle_dashen = get_Edge_window_rect(hwnd_title,"大神云游戏")
-    # if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-    #     import win32gui
-    #     hwnd_mul_google = win32gui.FindWindow(None, "网易云游戏平台 - Google Chrome")
-    #     win_rect_mul_google = win32gui.GetWindowRect(hwnd_mul_google)
-    # if sel == '5' or sel == '7':
-    #     import win32gui
-    #     hwnd_mul_edge = win32gui.FindWindow(None, "大神云游戏 - Google Chrome")
-    #     win_rect_mul_rightgoogle_dashen = win32gui.GetWindowRect(hwnd_mul_edge)
-    # 网易云游戏平台 - 个人 - Microsoft​ Edge
     chutdown = '1'
     chutdown = input('一题多少秒？\n0、10秒 1、12秒 2、20秒\n')
     if chutdown == '0':
         time_chutdown=10
-    if sel == '9':
+    elif chutdown == '2':
         time_chutdown=20
+    # if sel == '9':
+    #     time_chutdown=20
     iter = '1'
     iter = input("一轮多少题？\n0-10题1-15题2-25\n")
     if iter == '0':
         iter_num = 10
     elif iter == '2':
         iter_num = 25
-    else: iter_num = 15
     epoch = input('进行几次？\n默认3次\n')
     
     if(epoch != ''):
         epoch_num = int(epoch)
     question_num = 0
     chao_question,chao_options = None,None
+    pre_answer = 0
     while True:
         if(question_num==iter_num):
             epoch_num -= 1
             question_num = 0
         if epoch_num == 0:
+            print('此次答题平均每题耗时：{}'.format(1.0*total_time/total_num))
             break
         img = screencrop()
 
@@ -330,6 +331,12 @@ if __name__ == '__main__':
             # print(countdown_num)
         else: # 没识别到计时器，就识别开始和继续按钮
             # 识别奖励的中下部分继续按钮，然后识别下一轮的匹配按钮
+            # if is_answered==1:
+            if sel == '9': # 抢答
+                x,y = coordinate[pre_answer][0], coordinate[pre_answer][1]  # 进去，先盲猜A，A没人选，大概率能首抢
+                left_click(x,y,2) # 点击选项
+                continue
+            
             img_continue = screen.get_brower_centercontinueBtn(img)
             result_continue = ocr.ocr(img_continue)
             content_continue = ocr.ocr_content(result_continue)
@@ -421,7 +428,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 continue
 
-            if sel == '1' or sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel == '8': # 魔法史
+            if sel == '1' or sel == '4' or sel == '5' or sel == '6' or sel == '7' or sel == '8' or sel =='9': # 魔法史
                 flag0 = is_start(img, '学院活动匹配')
                 flag1 = is_start(img, '匹配上课')
                 flag2 = is_start(img, '准备')
@@ -445,23 +452,31 @@ if __name__ == '__main__':
             
             
         # cv2.imwrite('./img/harry_state_1216.png',img)
-        if countdown_num == time_chutdown:
+        if countdown_num == time_chutdown or (countdown_num <= 20 and countdown_num > 17):
             question_num += 1
             if sel == '9':
-                x,y = coordinate[0][0], coordinate[0][1]  # 进去，先盲猜A，A没人选，大概率能首抢
+                x,y = coordinate[pre_answer][0], coordinate[pre_answer][1]  # 进去，先盲猜A，A没人选，大概率能首抢
                 left_click(x,y,2) # 点击选项
             # print('第%d题'%question_num)
             is_answered = 0
             # time.sleep(0.1) # 测试 学院活动出题满了这一会，不然扫描不到题目
             # img = screencrop() # 测试 
             # cv2.imwrite('./img/harry1216.png',img)
+            print('epoch_num:{}, question_num:{}, countdown_num:{} '.format(epoch_num,question_num,countdown_num))
             s_time = time.time()*1000
+            time.sleep(0.1)
+            img = screencrop() # 第一遍扫描
             res = get_question_answer(img) # 保证优先抢答
-            if len(res) ==0:
+            if len(res) == 0:
                 img = screencrop() # 保证扫描到题目
                 res = get_question_answer(img)
             print('ocr时间: {}ms'.format(time.time()*1000-s_time))
+            total_time += time.time()*1000-s_time
+            total_num += 1
+
             if len(res) >0:
+                countdown_num = -1
+                pre_answer = res[0][2]
                 print('这题选',chr(ord('A')+int(res[0][2])))
                 x,y = coordinate[res[0][2]][0], coordinate[res[0][2]][1]
                 left_click(x,y,2) # 点击选项
@@ -473,7 +488,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,2)
                 is_answered = 1
                 chao_question,chao_options = ret_question_options(img)
-                time.sleep(2)
+                time.sleep(1)
                 # win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
                 # cv2.imwrite('./img/harry_test_1218.png',img)
             else:
@@ -481,7 +496,7 @@ if __name__ == '__main__':
                 time.sleep(1)
                 print('抄答案吧！')
             continue
-        if (is_answered == 0 and countdown_num >= 5):
+        elif (is_answered == 0 and countdown_num >= 5):
             # if countdown_num >=10:
             #     win_rect, img = screen.get_screenshot() # 别人的答案没稳定下来，重新截图
             # img = cv2.imread(screen.ravenclaw_imgpath)
@@ -505,6 +520,7 @@ if __name__ == '__main__':
             state3 = filterPersonState(contentPerson3)
             relstate = -1
             if state1 == 'A' or state2 == 'A' or state3 == 'A':
+                pre_answer = 0
                 print('这题抄A')
                 relstate = 0
                 x,y = coordinate[0][0], coordinate[0][1]
@@ -517,6 +533,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'B' or state2 == 'B' or state3 == 'B':
+                pre_answer = 1
                 print('这题抄B')
                 relstate = 1
                 x,y = coordinate[1][0], coordinate[1][1]
@@ -529,6 +546,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'C' or state2 == 'C' or state3 == 'C' or state1 == 'c' or state2 == 'c' or state3 == 'c':
+                pre_answer = 2
                 print('这题抄C')
                 relstate = 2
                 x,y = coordinate[2][0], coordinate[2][1]
@@ -541,6 +559,7 @@ if __name__ == '__main__':
                     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
                 is_answered = 1
             elif state1 == 'D' or state2 == 'D' or state3 == 'D':
+                pre_answer = 3
                 print('这题抄D')
                 relstate = 3
                 x,y = coordinate[3][0], coordinate[3][1]
@@ -564,32 +583,7 @@ if __name__ == '__main__':
                 write_new_question(question, options, relstate)
             time.sleep(0.5)
             continue
-        elif (is_answered == 0 and countdown_num == 4):
-        #     searchimp = searchImp(conf_data)
-        #     question,options = ret_question_options(img)
-        #     print(question,options)
-        #     ans_baidu = searchimp.baidu(question, options)
-        #     print('百度答案：',ans_baidu)
-        #     print('百度选：',chr(ord('A')+int(ans_baidu[0][2])))
-        #     tmp = int(ans_baidu[0][2])
-        #     x,y = coordinate[tmp][0], coordinate[tmp][1]
-        #     left_click(win_rect[0]+x,win_rect[1]+y,2)
-        #     if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-        #         x,y = coordinate[tmp][0], coordinate[tmp][1]
-        #         left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,2)
-        #     if sel == '5' or sel == '7':
-        #         x,y = coordinate[tmp][0], coordinate[tmp][1]
-        #         left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,2)
-
-            # print('这题盲猜C')
-            # x,y = coordinate[2][0], coordinate[2][1]
-            # left_click(win_rect[0]+x,win_rect[1]+y,2)
-            # if sel == '4' or sel == '5' or sel == '6' or sel == '7':
-            #     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-            #     left_click(win_rect_mul_google[0]+x,win_rect_mul_google[1]+y,4)
-            # if sel == '5' or sel == '7':
-            #     x, y = coordinate_mul[2][0], coordinate_mul[2][1]
-            #     left_click(win_rect_mul_rightgoogle_dashen[0]+x,win_rect_mul_rightgoogle_dashen[1]+y+padd2wy,4)
+        elif (is_answered == 0 and countdown_num <= 4):
             is_answered = 2 # 表示没得抄，盲猜
         if is_answered == 2:
             print('这题盲猜D')
@@ -607,9 +601,6 @@ if __name__ == '__main__':
             import datetime
             fileName = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')+'.png'
             
-            # from PIL import Image
-            # im = Image.fromarray(img)
-            # im.save('img/harry_'+fileName)
             img = img[:,:,::-1]
             cv2.imwrite('img/harry_dashen_'+fileName, img)
             # time.sleep(2)
@@ -620,11 +611,6 @@ if __name__ == '__main__':
             correctB = img[610:670,1307:1367]
             correctC = img[710:770,607:667] 
             correctD = img[710:770,1307:1367] 
-            # print(np.mean(correctA)) # 44.67 # 74.64
-            # print(np.mean(correctB)) # 83.39 # 100.87
-            # print(np.mean(correctC)) # 51.57 # 78.90
-            # print(np.mean(correctD)) # # 92.98 # 82.33
-            # question,options = ret_question_options(img)
             print(chao_question,chao_options)
             if 69<np.mean(correctA)<70:
                 print('记录A')
